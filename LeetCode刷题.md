@@ -2,9 +2,7 @@
 
 ## 双指针（对撞指针）
 
-### 167.有序数组的加和（easy）
-
-题目链接：https://leetcode-cn.com/problems/two-sum-ii-input-array-is-sorted/
+### [167. 两数之和 II - 输入有序数组](https://leetcode-cn.com/problems/two-sum-ii-input-array-is-sorted/)
 
 **解法**：采用头尾指针
 
@@ -33,9 +31,7 @@ class Solution(object):
         return []
 ```
 
-### 633.两数平方和（medium）
-
-题目链接：https://leetcode-cn.com/problems/sum-of-square-numbers/
+### [633. 平方数之和](https://leetcode-cn.com/problems/sum-of-square-numbers/)
 
 **解法**：采用头尾指针
 
@@ -92,9 +88,7 @@ class Solution:
         return True
 ```
 
-### 345.反转元音字符（easy）
-
-题目链接：https://leetcode-cn.com/problems/reverse-vowels-of-a-string/
+### [345. 反转字符串中的元音字母](https://leetcode-cn.com/problems/reverse-vowels-of-a-string/)
 
 **解法**：采用头尾指针
 
@@ -142,9 +136,7 @@ set() 函数创建一个无序不重复元素集，可进行关系测试，删�
 ###
 ```
 
-### 125.验证回文串（easy）
-
-题目链接：https://leetcode-cn.com/problems/valid-palindrome/
+### [125. 验证回文串](https://leetcode-cn.com/problems/valid-palindrome/)
 
 **解法**：首尾指针
 
@@ -174,5 +166,199 @@ class Solution(object):
                 l += 1
                 r -= 1
         return True
+```
+
+### [344. 反转字符串](https://leetcode-cn.com/problems/reverse-string/)
+
+**解法**：首尾指针。
+
+```python
+class Solution(object):
+    def reverseString(self, s):
+        """
+        :type s: List[str]
+        :rtype: None Do not return anything, modify s in-place instead.
+        """
+        if len(s) < 2:
+            return s
+        l, r = 0, len(s)-1
+        while l < r:
+            s[l], s[r] = s[r], s[l]
+            l += 1
+            r -= 1
+        return s
+```
+
+**大佬解法**：由于首尾对换，只用考虑半边就可以了。
+
+```python
+class Solution(object):
+    def reverseString(self, s):
+        """
+        :type s: List[str]
+        :rtype: None Do not return anything, modify s in-place instead.
+        """
+        for i in range(len(s)//2):
+            s[i], s[- 1 - i] = s[- 1 - i], s[i]
+```
+
+### [11. 盛最多水的容器](https://leetcode-cn.com/problems/container-with-most-water/)
+
+**解法**：首尾指针。
+
+**解题思路**：首先初始化最大面积为首尾两个数中最小值与两数距离相乘。接下来执行如下操作：两数中小的那一个进行移位（如果是左边小就令左边的指针向右移动，右边小就令右边指针向左移动），只有这样才能保证可能有比之前更大的值出现。不断循环直到左右指针相遇。
+
+```python
+class Solution(object):
+    def maxArea(self, height):
+        """
+        :type height: List[int]
+        :rtype: int
+        """
+        l, r = 0, len(height)-1
+        target = 0
+        while l<r:
+            target = max(min(height[l], height[r]) * (r-l), target)
+            if height[l] <= height[r]:
+                l += 1
+            else:
+                r -= 1
+        return target
+```
+
+## 双指针（快慢指针）
+
+### [141. 环形链表](https://leetcode-cn.com/problems/linked-list-cycle/)
+
+**解法**：快慢指针
+
+**解题思路**：首先判断列表是否长度大于等于2，然后设置前后两个指针，前面慢指针每次移动一位，后面快指针每次移动两位。若有循环，则快慢指针终会相遇；若没有循环，快指针会先一步走到列表尾部，可根据快指针的状态停止程序。
+
+```python
+# Definition for singly-linked list.
+# class ListNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution(object):
+    def hasCycle(self, head):
+        """
+        :type head: ListNode
+        :rtype: bool
+        """
+        if not head or head.next == None:
+            return False
+        slow, fast = head, head.next
+        while slow and fast:
+            if slow == fast:
+                return True
+            slow = slow.next
+            if fast.next:
+                fast = fast.next.next
+            else:
+                return False
+        return False
+```
+
+### [283. 移动零](https://leetcode-cn.com/problems/move-zeroes/)
+
+**解法**：快慢指针
+
+**解题思路**：首先判断是否是空或者只有一位的列表。然后在开始两个元素进行比较，当前面的元素是非零时两个指针均向后移动一步。当前面的指针指向0时，若后面的指针指向非零则交换二者，然后前后指针均向后移动一步，否则后面的指针向后移动一步直至找到非零元素或者到达列表结尾。当后面的指针到达列表结尾结束，返回原列表。
+
+```python
+class Solution(object):
+    def moveZeroes(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: None Do not return anything, modify nums in-place instead.
+        """
+        if len(nums) < 2:
+            return nums
+        slow, fast = 0, 1
+        while fast < len(nums):
+            if nums[slow] == 0 and nums[fast] != 0:
+                nums[slow], nums[fast] = nums[fast], nums[slow]
+                slow += 1
+                fast += 1
+            elif nums[slow] == 0:
+                fast += 1
+            else:
+                fast += 1
+                slow += 1
+        return nums
+```
+
+### [26. 删除有序数组中的重复项](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array/)
+
+**解法**：快慢指针
+
+```python
+class Solution:
+    def removeDuplicates(self, nums: List[int]) -> int:
+        if not  nums: return 0
+        # 慢指针指向待写入元素的位置，快指针遍历数组
+        slower, faster = 0, 0
+        while faster< len(nums):
+        #当快指针指向的元素与慢指针不同时，说明相同的元素已经遍历结束，此时将慢指针后移，将快指针的元素写入慢指针位置，保留一个元素
+            if nums[slower] != nums[faster]:
+                slower += 1
+                nums[slower] = nums[faster]
+            faster += 1
+        return slower + 1
+```
+
+或者（不用快慢指针， 慢，内存大）
+
+```python
+class Solution(object):
+    def removeDuplicates(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        l = len(nums)
+        if l == 0:
+            return 0
+        num = nums[0]
+        count = 1
+        for i in range(1, l):
+            if nums[i] != num:
+                nums[count] = nums[i]
+                num = nums[i]
+                count += 1
+        return count
+```
+
+### [80. 删除有序数组中的重复项 II](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array-ii/)
+
+**解法**：快慢指针
+
+**解题思路**：设置一个标志表示同样数字是否已经出现过，如果是，就跳过；如果不是，则保留一次。
+
+```python
+class Solution(object):
+    def removeDuplicates(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        if not nums:
+            return 0
+        flag = True
+        s, f = 0, 1
+        while f < len(nums):
+            if nums[s] != nums[f]:
+                s += 1
+                nums[s] = nums[f]
+                flag = True
+            else:
+                if flag:
+                    s += 1
+                    nums[s] = nums[f]
+                    flag = False
+            f += 1
+        return s+1
 ```
 
