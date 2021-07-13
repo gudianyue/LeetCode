@@ -362,3 +362,75 @@ class Solution(object):
         return s+1
 ```
 
+## 其他双指针
+
+### [524. 通过删除字母匹配到字典里最长单词](https://leetcode-cn.com/problems/longest-word-in-dictionary-through-deleting/)
+
+**解法**：双指针
+
+**解题思路**：在s和dictionary分别设置指针，先找出第一个符合条件的单词，当出现第二个符合条件的单词时，与第一个进行比较。
+
+```python
+class Solution(object):
+    def findLongestWord(self, s, dictionary):
+        """
+        :type s: str
+        :type dictionary: List[str]
+        :rtype: str
+        """
+        if  not s or not dictionary:
+            return ''
+        l = ''
+        for d in dictionary:
+            p = 0
+            for p1 in range(len(s)):
+                if p < len(d) and s[p1] == d[p]:
+                    p += 1
+                    continue
+            if p == len(d) and not l:
+                l = d
+            elif p == len(d):
+                if len(d) > len(l):
+                    l = d
+                elif len(d) < len(l):
+                    continue
+                else:
+                    if l < d:
+                        continue
+                    else:
+                        l = d
+        return l
+```
+
+### [88. 合并两个有序数组](https://leetcode-cn.com/problems/merge-sorted-array/)
+
+**解法**：三指针
+
+**解题思路**：设置三个指针，分别指向nums1，nums2和最后数组的尾部。从后往前比较。分别插入最大的数。最后有两种情况：1.nums1多余，直接返回；2.nums2多余，将nums1前面的数字覆盖为nums2剩下的数字。
+
+```python
+class Solution(object):
+    def merge(self, nums1, m, nums2, n):
+        """
+        :type nums1: List[int]
+        :type m: int
+        :type nums2: List[int]
+        :type n: int
+        :rtype: None Do not return anything, modify nums1 in-place instead.
+        """
+        s1, s2, end = m-1, n-1, m+n-1
+        while s1>=0 and s2 >=0:
+            if nums1[s1] < nums2[s2]:
+                nums1[end] = nums2[s2]
+                end -= 1
+                s2 -= 1
+            else:
+                nums1[end] = nums1[s1]
+                s1 -= 1
+                end -= 1
+        if s2 >= 0:
+            nums1[0:s2+1] = nums2[0:s2+1]
+```
+
+## 哈希表问题
+
