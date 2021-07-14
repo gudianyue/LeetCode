@@ -495,3 +495,127 @@ class Solution(object):
 **核心**：
 
 在哈希表中，哈希函数的设计很重要，一个好的哈希函数可以极大的提升性能，而且如果你的哈希函数设计的比较简单粗陋，那很容易被那些不怀好意的人捣乱，比如知道了你哈希函数的规则，故意制造容易冲突的key值，那就有意思了，你的哈希表就会一直撞啊，一直撞啊。
+
+### [1. 两数之和](https://leetcode-cn.com/problems/two-sum/)
+
+**解法**：哈希表
+
+**解题思路**：由于返回的是下标且题目中对于下标返回的顺序没有要求，因此可以建立字典形式的哈希表。
+
+```Python
+class Solution(object):
+    def twoSum(self, nums, target):
+        """
+        :type nums: List[int]
+        :type target: int
+        :rtype: List[int]
+        """
+        if not nums:
+            return []
+        hash_map = {}
+        for i in range(len(nums)):
+            t = target - nums[i]
+            if t in hash_map:
+                return [i, hash_map[t]]
+            else:
+                hash_map[nums[i]] = i
+```
+
+### [217. 存在重复元素](https://leetcode-cn.com/problems/contains-duplicate/)
+
+**暴力法**：set()函数获取不重复元素集，比较前后长度。
+
+```python
+class Solution(object):
+    def containsDuplicate(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: bool
+        """
+        if len(nums) < 2:
+            return False
+        l = set(nums)
+        if len((l)) == len(nums):
+            return False
+        else:
+            return True
+执行用时：20 ms, 在所有 Python 提交中击败了94.48%的用户
+内存消耗：17.2 MB, 在所有 Python 提交中击败了59.04%的用户
+```
+
+**哈希表法**
+
+```Python
+class Solution(object):
+    def containsDuplicate(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: bool
+        """
+        if len(nums) < 2:
+            return False
+        hash_map = set()
+        for num in nums:
+            if num not in hash_map:
+                hash_map.add(num)
+            else:
+                return True
+        return False
+执行用时：24 ms, 在所有 Python 提交中击败了82.43%的用户
+内存消耗：17.2 MB, 在所有 Python 提交中击败了57.16%的用户
+```
+
+add() 方法用于给集合添加元素，如果添加的元素在集合中已存在，则不执行任何操作。
+
+### [594. 最长和谐子序列](https://leetcode-cn.com/problems/longest-harmonious-subsequence/)
+
+**哈希表法**：建立数字-次数的哈希表，比较每个数字在数组中是否存在比它大1的数字，存在则把次数加起来，比较得到最大的组合。
+
+```Python
+class Solution(object):
+    def findLHS(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        if len(nums) < 2:
+            return 0
+        hash_map = {}
+        for num in nums:
+            hash_map[num] = hash_map.get(num, 0) + 1
+        res = 0
+        for k, v in hash_map.items():
+            if hash_map.get(k+1, 0) != 0:
+                res = max(res, hash_map.get(k+1)+v)
+        return res
+Python 字典(Dictionary) items() 函数以列表返回可遍历的(键, 值) 元组数组。
+执行用时：264 ms, 在所有 Python 提交中击败了30.93%的用户
+内存消耗：15.7 MB, 在所有 Python 提交中击败了6.19%的用户
+```
+
+### [128. 最长连续序列](https://leetcode-cn.com/problems/longest-consecutive-sequence/)
+
+**哈希表法**：建立无重复数字的哈希表，然后确定连续序列开头的数字。遍历哈希表数字（避免重复的数字浪费时间），如果比它小1的数字存在于哈希表中，则该数字不能作为连续序列开头。在确定开头后，计算哈希表中连续序列的长度。
+
+```python
+class Solution(object):
+    def longestConsecutive(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        if not nums:
+            return 0
+        hash_map = set(nums)
+        max_len = 0
+        for i in hash_map:
+            if i-1 not in hash_map:
+                leng = 1
+                cur = i
+                while cur+1 in hash_map:
+                    leng += 1
+                    cur += 1
+                max_len = max(max_len, leng)
+        return max_len
+```
+
