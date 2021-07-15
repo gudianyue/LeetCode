@@ -619,3 +619,139 @@ class Solution(object):
         return max_len
 ```
 
+### [349. 两个数组的交集](https://leetcode-cn.com/problems/intersection-of-two-arrays/)
+
+**哈希表**：先保存两个没有重复元素的列表（set()函数），再比较两个列表中相同的元素。
+
+```python
+class Solution(object):
+    def intersection(self, nums1, nums2):
+        """
+        :type nums1: List[int]
+        :type nums2: List[int]
+        :rtype: List[int]
+        """
+        if not nums1 or not nums2: return []
+        res = []
+        hashmap1 = set(nums1)
+        hashmap2 = set(nums2)
+        for num in hashmap1:
+            if num in hashmap2:
+                res.append(num)
+        return res
+```
+
+### [350. 两个数组的交集 II](https://leetcode-cn.com/problems/intersection-of-two-arrays-ii/)
+
+**哈希表**：建立两个哈希表，保存两个数组的数值和出现的次数。比较相同的数值和它在两个数组中出现的次数，少的次数的就是数值在输出中出现的次数。
+
+```python
+class Solution(object):
+    def intersect(self, nums1, nums2):
+        """
+        :type nums1: List[int]
+        :type nums2: List[int]
+        :rtype: List[int]
+        """
+        if not nums1 or not nums2:
+            return []
+        hash_map1 = {}
+        hash_map2 = {}
+        out = []
+        for num in nums1:
+            hash_map1[num] = hash_map1.get(num, 0) + 1
+        for num in nums2:
+            hash_map2[num] = hash_map2.get(num, 0) + 1
+        for k, v in hash_map1.items():
+            if k in hash_map2.keys():
+                num = min(hash_map1[k], hash_map2[k])
+                for i in range(num):
+                    out.append(k)
+        return out
+执行用时: 28 ms
+内存消耗: 13 MB
+```
+
+**优化**：将较短的数组建立哈希表，在较长的数组中寻找重复的元素。
+
+```python
+class Solution(object):
+    def intersect(self, nums1, nums2):
+        """
+        :type nums1: List[int]
+        :type nums2: List[int]
+        :rtype: List[int]
+        """
+        if not nums1 or not nums2:
+            return []
+        if len(nums1) > len(nums2):
+            return self.intersect(nums2, nums1)
+        hash_map = {}
+        out = []
+        for num in nums1:
+            hash_map[num] = hash_map.get(num, 0) + 1
+        for num in nums2:
+            if hash_map.get(num) and hash_map[num] > 0:
+                out.append(num)
+                hash_map[num] -= 1
+        return out
+执行用时: 24 ms
+内存消耗: 13 MB
+```
+
+**继续优化**：双指针，先排序再比较相同的元素。
+
+```python
+class Solution(object):
+    def intersect(self, nums1, nums2):
+        """
+        :type nums1: List[int]
+        :type nums2: List[int]
+        :rtype: List[int]
+        """
+        nums1.sort()
+        nums2.sort()
+
+        length1, length2 = len(nums1), len(nums2)
+        intersection = list()
+        index1 = index2 = 0
+        while index1 < length1 and index2 < length2:
+            if nums1[index1] < nums2[index2]:
+                index1 += 1
+            elif nums1[index1] > nums2[index2]:
+                index2 += 1
+            else:
+                intersection.append(nums1[index1])
+                index1 += 1
+                index2 += 1
+        
+        return intersection
+执行用时：16 ms, 在所有 Python 提交中击败了94.97%的用户
+内存消耗：12.9 MB, 在所有 Python 提交中击败了95.37%的用户
+```
+
+### [242. 有效的字母异位词](https://leetcode-cn.com/problems/valid-anagram/)
+
+**哈希表**：为一个字符串建立字符与出现次数的哈希表，在遍历另一个字符串时，如果是哈希表中的字符，令其次数-1；若次数已经为0或者不是哈希表中的字符，返回FALSE。否则遍历完后返回TRUE。
+
+```Python
+class Solution(object):
+    def isAnagram(self, s, t):
+        """
+        :type s: str
+        :type t: str
+        :rtype: bool
+        """
+        if len(s) != len(t):
+            return False
+        hash_map = {}
+        for char in s:
+            hash_map[char] = hash_map.get(char, 0) + 1
+        for char in t:
+            if not hash_map.get(char) or hash_map[char] == 0:
+                return False
+            else:
+                hash_map[char] -= 1
+        return True
+```
+
