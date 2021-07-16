@@ -755,3 +755,192 @@ class Solution(object):
         return True
 ```
 
+### [202. 快乐数](https://leetcode-cn.com/problems/happy-number/)
+
+**哈希表**：利用哈希表存储访问过的值，判断是否进行循环。
+
+**知识点**：sum() 方法对**序列**进行求和计算。add() 方法用于给集合添加元素，如果添加的元素在集合中已存在，则不执行任何操作。
+
+```Python
+sum(iterable[, start])
+参数
+iterable -- 可迭代对象，如：列表、元组、集合。
+start -- 指定相加的参数，如果没有设置这个值，默认为0。
+返回值
+返回计算结果。
+
+set.add(elmnt)
+参数
+elmnt -- 必需，要添加的元素。
+```
+
+```Python
+class Solution(object):
+    def isHappy(self, n):
+        """
+        :type n: int
+        :rtype: bool
+        """
+        if n == 1:
+            return True
+        hash_map = set()
+        while True:
+            if n == 1:
+                return True
+            elif n in hash_map:
+                return False
+            hash_map.add(n)
+            n = sum([int(num)**2 for num in str(n)])
+```
+
+**快慢指针**：先定义一个函数返回下一个数字的数值，那么就可以隐性的建立一个链表。题目就变成判断链表是否出现循环。使用快慢指针，如果没有循环则快指针一定可以先一步到达1，否则快慢指针一定会相遇。
+
+```Python
+class Solution(object):
+    def isHappy(self, n):
+        """
+        :type n: int
+        :rtype: bool
+        """
+        def nxt(n):
+            return sum([int(c)**2 for c in str(n)])
+        slow, fast = n, nxt(n)
+        while slow != fast and fast != 1:
+            slow = nxt(slow)
+            fast = nxt(nxt(fast))
+        return fast==1
+```
+
+### [205. 同构字符串](https://leetcode-cn.com/problems/isomorphic-strings/)
+
+**哈希表**：利用哈希表建立一一对应关系，当某一位对应不上时，判断为False。
+
+```Python
+class Solution(object):
+    def isIsomorphic(self, s, t):
+        """
+        :type s: str
+        :type t: str
+        :rtype: bool
+        """
+        hash_map1 = {}
+        hash_map2 = {}
+        for i in range(len(s)):
+            if (s[i] in hash_map1 and hash_map1[s[i]] != t[i]) or (t[i] in hash_map2 and hash_map2[t[i]] != s[i]):
+                return False
+            hash_map1[s[i]] = t[i]
+            hash_map2[t[i]] = s[i]
+        return True
+```
+
+**zip**：利用zip()函数将两个字符串对应位置的字母打包到一起（题目给出的字符串长度是一致的），用set()函数去掉重复的对，再用zip(*)函数解开为两个字符串。那么，如果两个字符串对应位置的字符是一一对应的，解开后的两个字符串中都不会出现重复字符；如果不是，肯定有一个字符串中有重复字符出现（一对多）。
+
+```python
+zip() 函数用于将可迭代的对象作为参数，将对象中对应的元素打包成一个个元组，然后返回由这些元组组成的对象，这样做的好处是节约了不少的内存。
+我们可以使用 list() 转换来输出列表。
+如果各个迭代器的元素个数不一致，则返回列表长度与最短的对象相同，利用 * 号操作符，可以将元组解压为列表。
+
+zip 语法：
+zip([iterable, ...])
+参数说明：
+iterabl -- 一个或多个迭代器;
+
+>>>a = [1,2,3]
+>>> b = [4,5,6]
+>>> c = [4,5,6,7,8]
+>>> zipped = zip(a,b)     # 返回一个对象
+>>> zipped
+<zip object at 0x103abc288>
+>>> list(zipped)  # list() 转换为列表
+[(1, 4), (2, 5), (3, 6)]
+>>> list(zip(a,c))              # 元素个数与最短的列表一致
+[(1, 4), (2, 5), (3, 6)]
+>>> a1, a2 = zip(*zip(a,b))          # 与 zip 相反，zip(*) 可理解为解压，返回二维矩阵式
+>>> list(a1)
+[1, 2, 3]
+>>> list(a2)
+[4, 5, 6]
+```
+
+```Python
+class Solution(object):
+    def isIsomorphic(self, s, t):
+        """
+        :type s: str
+        :type t: str
+        :rtype: bool
+        """
+        l = zip(*set(zip(s, t)))
+        for i in l:
+            if len(i) != len(set(i)):
+                return False
+        return True
+```
+
+### [451. 根据字符出现频率排序](https://leetcode-cn.com/problems/sort-characters-by-frequency/)
+
+**哈希表**：先建立哈希表，再对出现次数进行排序。
+
+```python
+sorted() 函数对所有可迭代的对象进行排序操作。
+sort 与 sorted 区别：
+sort 是应用在 list 上的方法，sorted 可以对所有可迭代的对象进行排序操作。
+list 的 sort 方法返回的是对已经存在的列表进行操作，而内建函数 sorted 方法返回的是一个新的 list，而不是在原来的基础上进行的操作。
+
+sorted 语法：
+sorted(iterable, key=None, reverse=False)  
+参数说明：
+iterable -- 可迭代对象。
+key -- 主要是用来进行比较的元素，只有一个参数，具体的函数的参数就是取自于可迭代对象中，指定可迭代对象中的一个元素来进行排序。
+reverse -- 排序规则，reverse = True 降序 ， reverse = False 升序（默认）。
+
+>>>sorted([5, 2, 3, 1, 4])
+[1, 2, 3, 4, 5]                      # 默认为升序
+
+先按照成绩降序排序，相同成绩的按照名字升序排序：
+d1 = [{'name':'alice', 'score':38}, {'name':'bob', 'score':18}, {'name':'darl', 'score':28}, {'name':'christ', 'score':28}]
+l = sorted(d1, key=lambda x:(-x['score'], x['name']))
+
+print(l)
+
+[{'name': 'alice', 'score': 38}, {'name': 'christ', 'score': 28}, {'name': 'darl', 'score': 28}, {'name': 'bob', 'score': 18}]
+```
+
+```Python
+class Solution(object):
+    def frequencySort(self, s):
+        """
+        :type s: str
+        :rtype: str
+        """
+        if not s:
+            return ''
+        hash_map = {}
+        for char in s:
+            hash_map[char] = hash_map.get(char, 0) + 1
+        t = sorted(hash_map.items(), key = lambda kv:(kv[1], kv[0]), reverse = True)
+        out = []
+        for k, v in t:
+            for i in range(v):
+                out.append(k)
+        return ''.join(out)
+```
+
+**使用collections.Counter**
+
+```python
+from collections import Counter
+class Solution(object):
+    def frequencySort(self, s):
+        """
+        :type s: str
+        :rtype: str
+        """
+        c = Counter(s)
+        a = sorted(c.keys(), key = lambda x: -c[x])
+        result = ""
+        for i in a:
+            result += i*c[i]
+        return result
+```
+
