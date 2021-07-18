@@ -944,3 +944,202 @@ class Solution(object):
         return result
 ```
 
+### [15. 三数之和](https://leetcode-cn.com/problems/3sum/)
+
+**哈希表**：在将数组排序之后，遍历数组时，题目变成了在剩下的数组中寻找加和为当前元素取负的两数之和。
+
+```Python
+class Solution(object):
+    def threeSum(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: List[List[int]]
+        """
+        if len(nums) < 3:
+            return []
+        res = set()
+        nums.sort()
+        if nums[0] > 0 or nums[-1] < 0: ## 由于数组已经排序，没有小于0的数或者最大的数小于0都不可能出现满足题目要求的组合。
+            return []
+        for i in range(len(nums)-2):
+            if i > 0 and nums[i-1] == nums[i]: ## 由于输出的结果不能重复，对于相同的数字，前面的数字在遍历后面的数组时已经所有可能组合都遍历了，所以如果出现了重复的数字，直接跳过
+                continue
+            if nums[i] > 0:
+                break
+            target = -nums[i]
+            hash_map = set()
+            for j in range(i+1, len(nums)):
+                t = target - nums[j]
+                if t not in hash_map:
+                    hash_map.add(nums[j])
+                    continue
+                triplet = [nums[i], t, nums[j]]
+                triplet.sort()
+                if tuple(triplet) not in res:
+                    res.add(tuple(triplet))
+        return [list(num) for num in res]
+执行用时: 452 ms
+内存消耗: 21.1 MB
+```
+
+**双指针**：后面寻找两数之和的方法可以使用双指针。
+
+```Python
+class Solution(object):
+    def threeSum(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: List[List[int]]
+        """
+        if len(nums) < 3:
+            return []
+        res = set()
+        nums.sort()
+        if nums[0] > 0 or nums[-1] < 0:
+            return []
+        for i in range(len(nums)-2):
+            if i > 0 and nums[i-1] == nums[i]:
+                continue
+            if nums[i] > 0:
+                break
+            target = -nums[i]
+            start, end = i+1, len(nums)-1
+            while start < end:
+                if nums[start] + nums[end] < target:
+                    start += 1
+                elif nums[start] + nums[end] > target:
+                    end -= 1
+                else:
+                    triple = [nums[i], nums[start], nums[end]]
+                    triple.sort()
+                    if tuple(triple) not in res:
+                        res.add(tuple(triple))
+                    start += 1
+                    end -= 1
+        return [list(num) for num in res]
+执行用时：276 ms, 在所有 Python 提交中击败了99.46%的用户
+内存消耗：20.7 MB, 在所有 Python 提交中击败了5.02%的用户
+```
+
+### [454. 四数相加 II](https://leetcode-cn.com/problems/4sum-ii/)
+
+**哈希表**：利用哈希表将两个数组组合成一个表，将O(n4)复杂度降到O(n2)。
+
+```Python
+class Solution(object):
+    def fourSumCount(self, nums1, nums2, nums3, nums4):
+        """
+        :type nums1: List[int]
+        :type nums2: List[int]
+        :type nums3: List[int]
+        :type nums4: List[int]
+        :rtype: int
+        """
+        hash_map1 = {}
+        hash_map2 = {}
+        out = 0
+        for A in nums1:
+            for B in nums2:
+                hash_map1[A+B] = hash_map1.get(A+B, 0) + 1
+        for C in nums3:
+            for D in nums4:
+                hash_map2[C+D] = hash_map2.get(C+D, 0) + 1
+        for k, v in hash_map1.items():
+            out += hash_map2.get(0-k, 0) * v
+        return out
+执行用时：500 ms, 在所有 Python 提交中击败了85.35%的用户
+内存消耗：13.5 MB, 在所有 Python 提交中击败了18.54%的用户
+```
+
+**优化**：由于是寻找所有可能的组合，即下标不同但是数字组合相同也算一次，所以在第二遍遍历两个数组时直接比较。
+
+```Python
+class Solution(object):
+    def fourSumCount(self, nums1, nums2, nums3, nums4):
+        """
+        :type nums1: List[int]
+        :type nums2: List[int]
+        :type nums3: List[int]
+        :type nums4: List[int]
+        :rtype: int
+        """
+        hash_map = {}
+        out = 0
+        for A in nums1:
+            for B in nums2:
+                hash_map[A+B] = hash_map.get(A+B, 0) + 1
+        for C in nums3:
+            for D in nums4:
+                S = -C - D 
+                if S in hash_map:
+                    out += hash_map[S]
+        return out
+执行用时：408 ms, 在所有 Python 提交中击败了93.53%的用户
+内存消耗：13.2 MB, 在所有 Python 提交中击败了87.50%的用户
+```
+
+### [49. 字母异位词分组](https://leetcode-cn.com/problems/group-anagrams/)
+
+**哈希表**：利用哈希表建立一个字符串中所有字符及其出现的次数，然后不断对比。
+
+```Python
+class Solution(object):
+    def groupAnagrams(self, strs):
+        """
+        :type strs: List[str]
+        :rtype: List[List[str]]
+        """
+        if len(strs) < 2:
+            return [strs]
+        from collections import defaultdict
+        hash_map = defaultdict(list)
+        hash_map1 = {}
+        for i in range(len(strs)):
+            for j in range(ord('a'), ord('z') + 1):
+                hash_map1[chr(j)] = 0
+            for k in range(len(strs[i])):
+                hash_map1[strs[i][k]] += 1
+            hash_map[tuple(hash_map1.values())].append(strs[i])
+        return list(hash_map.values())
+执行用时：96 ms, 在所有 Python 提交中击败了18.22%的用户
+内存消耗：19.4 MB, 在所有 Python 提交中击败了5.03%的用户
+```
+
+**官方**
+
+```python
+class Solution(object):
+    def groupAnagrams(self, strs):
+        """
+        :type strs: List[str]
+        :rtype: List[List[str]]
+        """
+        mp = collections.defaultdict(list)
+
+        for st in strs:
+            key = "".join(sorted(st))
+            mp[key].append(st)
+        
+        return list(mp.values())
+执行用时：48 ms, 在所有 Python 提交中击败了78.74%的用户
+内存消耗：17 MB, 在所有 Python 提交中击败了57.95%的用户
+```
+
+**大佬解法**：https://leetcode-cn.com/problems/group-anagrams/solution/python3-99-by-meng-zhi-hen-n/
+
+```Python
+class Solution(object):
+    def groupAnagrams(self, strs):
+        """
+        :type strs: List[str]
+        :rtype: List[List[str]]
+        """
+        hash_map = {}
+        for item in strs:
+            key = tuple(sorted(item))
+            hash_map[key] = hash_map.get(key, []) + [item]
+        return list(hash_map.values())
+执行用时：36 ms, 在所有 Python 提交中击败了99.07%的用户
+内存消耗：17.4 MB, 在所有 Python 提交中击败了32.71%的用户
+```
+
