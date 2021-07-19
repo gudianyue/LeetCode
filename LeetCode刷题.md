@@ -1143,3 +1143,183 @@ class Solution(object):
 内存消耗：17.4 MB, 在所有 Python 提交中击败了32.71%的用户
 ```
 
+### [447. 回旋镖的数量](https://leetcode-cn.com/problems/number-of-boomerangs/)
+
+**哈希表**：利用哈希表保存每两个点的距离，然后判断相同距离的对数是否大于2。
+
+```python
+class Solution(object):
+    def numberOfBoomerangs(self, points):
+        """
+        :type points: List[List[int]]
+        :rtype: int
+        """
+        if not points or len(points) < 3:
+            return 0
+        out = 0
+        for i in range(len(points)):
+            hash_map = {}
+            for j in range(len(points)):## 不同的点不需要考虑有与自身一样的点，所以可以和自己计算距离
+                diction = (points[i][0] - points[j][0])**2 + (points[i][1] - points[j][1])**2
+                hash_map[diction] = hash_map.get(diction, 0) + 1
+            for v in hash_map.values():## 相同距离的对数两两组合，数量是v*(v-1),因为要考虑顺序
+                if v > 1:
+                    out += v * (v-1)
+        return out
+执行用时：484 ms, 在所有 Python 提交中击败了95.45%的用户
+内存消耗：13.1 MB, 在所有 Python 提交中击败了72.73%的用户
+```
+
+### [149. 直线上最多的点数](https://leetcode-cn.com/problems/max-points-on-a-line/)
+
+**哈希表**：利用斜率来判定点共线（解题代码来自leetcode题解区powcai大佬，如果直接用除法计算容易出现截断从而出现错误。用公约数更好，如果直接调用math库里的gcd，这个库里的gcd只能计算出正值，如果math.gcd(3,-6)得到3，因此大佬重新写了gcd，可以参考）https://leetcode-cn.com/problems/max-points-on-a-line/comments/122673
+
+```python
+class Solution(object):
+    def maxPoints(self, points):
+        """
+        :type points: List[List[int]]
+        :rtype: int
+        """
+        from collections import Counter, defaultdict
+        point_dict = Counter(tuple(point) for point in points)
+        not_repeat_points = list(point_dict.keys())
+        n = len(not_repeat_points)
+        if n == 1:
+            return point_dict[not_repeat_points[0]]
+        out = 0
+        def gcd(x, y):
+            if y == 0:
+                return x
+            else:
+                return gcd(y, x % y)
+        for i in range(n-1):
+            x1, y1 = not_repeat_points[i][0], not_repeat_points[i][1]
+            slope = defaultdict(int)
+            for j in range(i+1, n):
+                x2, y2 = not_repeat_points[j][0], not_repeat_points[j][1]
+                dx, dy = x2 - x1, y2 - y1
+                g = gcd(dy, dx)
+                if g != 0:
+                    dy = dy // g
+                    dx = dx // g
+                slope["{}/{}".format(dy, dx)] += point_dict[not_repeat_points[j]]
+            out = max(out, max(slope.values()) + point_dict[not_repeat_points[i]])
+        return out
+执行用时：44 ms, 在所有 Python 提交中击败了79.85%的用户
+内存消耗：13.1 MB, 在所有 Python 提交中击败了60.81%的用户
+```
+
+### [219. 存在重复元素 II](https://leetcode-cn.com/problems/contains-duplicate-ii/)
+
+**哈希表**：利用哈希表维护一个窗口大小为k的序列。
+
+```Python
+class Solution(object):
+    def containsNearbyDuplicate(self, nums, k):
+        """
+        :type nums: List[int]
+        :type k: int
+        :rtype: bool
+        """
+        if not nums or len(nums) < 2:
+            return False
+        hsah_map = set()
+        for i in range(len(nums)):
+            if nums[i] in hsah_map:
+                return True
+            hsah_map.add(nums[i])
+            if len(hsah_map) > k:
+                hsah_map.remove(nums[i-k])
+        return False
+执行用时：92 ms, 在所有 Python 提交中击败了22.54%的用户
+内存消耗：20 MB, 在所有 Python 提交中击败了37.17%的用户
+```
+
+**大佬解法，哈希表**：https://leetcode-cn.com/problems/contains-duplicate-ii/solution/python3-ha-xi-biao-by-ting-ting-28/
+
+```
+class Solution(object):
+    def containsNearbyDuplicate(self, nums, k):
+        """
+        :type nums: List[int]
+        :type k: int
+        :rtype: bool
+        """
+        hash_map = {}
+        for i in range(len(nums)):
+            if nums[i] in hash_map and hash_map[nums[i]] >= i-k:
+                return True
+            hash_map[nums[i]] = i
+        return False
+执行用时：60 ms, 在所有 Python 提交中击败了40.77%的用户
+内存消耗：22 MB, 在所有 Python 提交中击败了32.38%的用户        
+```
+
+### [220. 存在重复元素 III](https://leetcode-cn.com/problems/contains-duplicate-iii/)
+
+**哈希表**：在建立窗口的基础上多了一个判断。
+
+```Python
+class Solution(object):
+    def containsNearbyAlmostDuplicate(self, nums, k, t):
+        """
+        :type nums: List[int]
+        :type k: int
+        :type t: int
+        :rtype: bool
+        """
+        if not nums and len(nums) < 2:
+            return False
+        hash_map =set()
+        for i in range(len(nums)):
+            if t == 0 and nums[i] in hash_map:
+                return True
+            elif t != 0:
+                for num in hash_map:
+                    if abs(nums[i] - num) <= t:
+                        return True
+            hash_map.add(nums[i])
+            if len(hash_map) > k:
+                hash_map.remove(nums[i-k])
+        return False
+执行用时：6076 ms, 在所有 Python 提交中击败了5.66%的用户
+内存消耗：14.4 MB, 在所有 Python 提交中击败了93.80%的用户
+```
+
+**大佬解法**：桶排序，空间换时间。https://leetcode-cn.com/problems/contains-duplicate-iii/solution/gong-shui-san-xie-yi-ti-shuang-jie-hua-d-dlnv/
+
+```python
+class Solution(object):
+    def containsNearbyAlmostDuplicate(self, nums, k, t):
+        """
+        :type nums: List[int]
+        :type k: int
+        :type t: int
+        :rtype: bool
+        """
+        def getIdx(u):
+            return ((u + 1) // size) - 1 if u < 0 else u // size   
+        map = {}
+        size = t + 1
+        for i,u in enumerate(nums):
+            idx = getIdx(u)
+            # 目标桶已存在（桶不为空），说明前面已有 [u - t, u + t] 范围的数字
+            if idx in map:
+                return True
+            # 检查相邻的桶
+            l, r = idx - 1, idx + 1
+            if l in map and abs(u - map[l]) <= t:
+                return True
+            if r in map and abs(u - map[r]) <= t:
+                return True
+            # 建立目标桶
+            map[idx] = u
+            # 维护个数为k
+            if i >= k:
+                map.pop(getIdx(nums[i-k]))
+        return False
+执行用时：40 ms, 在所有 Python 提交中击败了88.14%的用户
+内存消耗：14.9 MB, 在所有 Python 提交中击败了81.13%的用户
+```
+
