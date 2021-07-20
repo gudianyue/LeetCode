@@ -1323,3 +1323,88 @@ class Solution(object):
 内存消耗：14.9 MB, 在所有 Python 提交中击败了81.13%的用户
 ```
 
+## 排序（非题目，纯知识点）
+
+### 插入排序
+
+* 第i个元素左边的元素已经排序，将第i个元素与前边的已排序序列进行比较，并交换
+* 遍历整个数组，完成排序
+* 时间复杂度：平均O(n^2), 最坏O(n^2), 最好O(n)
+* 稳定的排序算法
+
+```python
+def InsertSort(numbers:List[int]):
+    for i in range(len(numbers)): ##外层循环控制遍历数组
+        #内层循环控制比较与交换
+        for j in range (i):
+            #第i个元素比之前的元素小，进行交换
+            if numbers[i] < numbers[j]:
+                numbers[i], numbers[j] = numbers[j], numbers[i]
+```
+
+### 希尔排序
+
+* 希尔排序也是一种插入排序，它是简单插入排序经过改进之后的一个更高效的版本，也称为缩小增量排序，同时该算法是冲破O(n2)的第一批算法之一。
+* 等间隔取元素组成子序列进行排序，间隔逐渐变小，序列的长度逐渐增长
+* 如果所取的间隔互相不互质，那么小间隔的一部分序列则不起作用，效果变坏
+* 时间复杂度：平均O(n^1.3), 最坏O(n^2), 最好O(n)
+* 不稳定的排序算法
+
+以下引用自：https://blog.csdn.net/double_sweet1/article/details/101476886
+
+![图解算法---希尔排序](https://imgconvert.csdnimg.cn/aHR0cDovL3AxLnBzdGF0cC5jb20vbGFyZ2UvcGdjLWltYWdlLzE1MjM3NjMzOTA0MTE3MzFjNGQ0ODZk?x-oss-process=image/format,png)
+
+![图解算法---希尔排序](https://imgconvert.csdnimg.cn/aHR0cDovL3AzLnBzdGF0cC5jb20vbGFyZ2UvcGdjLWltYWdlLzE1MjM3NjMzOTA2MjE4Mzg5ZjQ2ZTI0?x-oss-process=image/format,png)
+
+![图解算法---希尔排序](https://imgconvert.csdnimg.cn/aHR0cDovL3AzLnBzdGF0cC5jb20vbGFyZ2UvcGdjLWltYWdlLzE1MjM3NjMzOTA1ODRkOTY2MDRiNzAx?x-oss-process=image/format,png)
+
+![图解算法---希尔排序](https://imgconvert.csdnimg.cn/aHR0cDovL3A5LnBzdGF0cC5jb20vbGFyZ2UvcGdjLWltYWdlLzE1MjM3NjMzOTA2MDVmMWFjYzY1NGM4?x-oss-process=image/format,png)
+
+![图解算法---希尔排序](https://imgconvert.csdnimg.cn/aHR0cDovL3AxLnBzdGF0cC5jb20vbGFyZ2UvcGdjLWltYWdlLzE1MjM3NjMzOTA2MzI4OWM0ZjI4N2Ez?x-oss-process=image/format,png)
+
+
+
+![图解算法---希尔排序](https://imgconvert.csdnimg.cn/aHR0cDovL3AzLnBzdGF0cC5jb20vbGFyZ2UvcGdjLWltYWdlLzE1MjM3NjMzOTA2ODc2ZDFkYjk0Y2Y5?x-oss-process=image/format,png)
+
+![图解算法---希尔排序](https://imgconvert.csdnimg.cn/aHR0cDovL3A5LnBzdGF0cC5jb20vbGFyZ2UvcGdjLWltYWdlLzE1MjM3NjMzOTA3NjFmN2YzMmRmNTI4?x-oss-process=image/format,png)
+
+![图解算法---希尔排序](https://imgconvert.csdnimg.cn/aHR0cDovL3AzLnBzdGF0cC5jb20vbGFyZ2UvcGdjLWltYWdlLzE1MjM3NjMzOTA4NzA3MjcwMjc4MmM1?x-oss-process=image/format,png)
+
+​                                                                                                         **对这仅有的一组数据进行排序，排序完成**
+
+```python
+def ShellSort(arr:List[int]): 
+  
+    n = len(arr)
+    gap = int(n/2) ## 取整
+  
+    while gap > 0: 
+  
+        for i in range(gap,n): 
+  
+            temp = arr[i] 
+            j = i 
+            while  j >= gap and arr[j-gap] >temp: 
+                arr[j] = arr[j-gap] 
+                j -= gap 
+            arr[j] = temp 
+        gap = int(gap/2)
+```
+
+### 选择排序
+
+选择排序（Selection sort）是一种简单直观的排序算法。它的工作原理如下。首先在未排序序列中找到最小（大）元素，存放到排序序列的起始位置，然后，再从剩余未排序元素中继续寻找最小（大）元素，然后放到已排序序列的末尾。以此类推，直到所有元素均排序完毕。
+
+![img](https://www.runoob.com/wp-content/uploads/2019/03/selectionSort.gif)
+
+```python
+def SelectSort(numbers:List[int]):
+    for i in range(len(numbers)-1):
+        min_idx = i
+        for j in range(i+1, len(numbers)):
+            if numbers[min_idx] > numbers[j]:
+                min_idx = j
+                
+        numbers[i], numbers[min_idx] = numbers[min_idx], numbers[i]
+```
+
