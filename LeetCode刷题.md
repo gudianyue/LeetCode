@@ -1327,19 +1327,23 @@ class Solution(object):
 
 ### 插入排序
 
-* 第i个元素左边的元素已经排序，将第i个元素与前边的已排序序列进行比较，并交换
+* 第i个元素左边的元素已经排序，将第i个元素与前边的已排序序列进行比较，将其插入到前面已排序的序列中比它小的数的前面（如果有）。
 * 遍历整个数组，完成排序
 * 时间复杂度：平均O(n^2), 最坏O(n^2), 最好O(n)
 * 稳定的排序算法
 
 ```python
 def InsertSort(numbers:List[int]):
-    for i in range(len(numbers)): ##外层循环控制遍历数组
-        #内层循环控制比较与交换
-        for j in range (i):
+    if len(numbers) <= 1:
+        return numbers
+    for right in range(1, len(numbers)): 
+        targrt = numbers[right]
+        for left in range (right):
             #第i个元素比之前的元素小，进行交换
-            if numbers[i] < numbers[j]:
-                numbers[i], numbers[j] = numbers[j], numbers[i]
+            if targrt < numbers[left]:
+                numbers[left+1:right+1] = numbers[left:right]
+                numbers[left] = target
+                break
 ```
 
 ### 希尔排序
@@ -1406,5 +1410,195 @@ def SelectSort(numbers:List[int]):
                 min_idx = j
                 
         numbers[i], numbers[min_idx] = numbers[min_idx], numbers[i]
+```
+
+### 冒泡排序
+
+原理：比较两个相邻的元素，将值大的元素交换到右边
+
+思路：依次比较相邻的两个数，将比较小的数放在前面，比较大的数放在后面。
+
+　　　　(1)第一次比较：首先比较第一和第二个数，将小数放在前面，将大数放在后面。
+
+　　　　(2)比较第2和第3个数，将小数放在前面，大数放在后面。
+
+　　　　......
+
+　　　　(3)如此继续，直到比较到最后的两个数，将小数放在前面，大数放在后面，重复步骤，直至全部排序完成
+
+　　　　(4)在上面一趟比较完成后，最后一个数一定是数组中最大的一个数，所以在比较第二趟的时候，最后一个数是不参加比较的。
+
+　　　　(5)在第二趟比较完成后，倒数第二个数也一定是数组中倒数第二大数，所以在第三趟的比较中，最后两个数是不参与比较的。
+
+　　　　(6)依次类推，每一趟比较次数依次减少一个。
+
+```python
+def BubbleSort(numbers):
+
+    for i in range(1, len(numbers)):
+        for j in range(len(numbers) - i) :
+            if numbers[j] > numbers[j + 1] :
+                numbers[j + 1], numbers[j] = numbers[j], numbers[j + 1]
+```
+
+### 堆排序
+
+**知识点来源**：知乎https://zhuanlan.zhihu.com/p/128892381
+
+博客https://www.cnblogs.com/chengxiao/p/6129630.html
+
+**堆排序**是一种原地、时间复杂度O(nlogn)的排序算法，它借助了一种数据结构-堆(heap)。
+
+#### 什么是堆？
+首先堆是一种树，一种满足以下特质的树结构：
+
+堆是一个完全二叉树
+堆中每一个节点的值必须大于或者等于（小于或者等于）其左右子树的值。【大顶堆、小顶堆】
+![img](https://images2015.cnblogs.com/blog/1024555/201612/1024555-20161217182750011-675658660.png)
+
+#### 如何实现一个堆
+
+存储一个完全二叉树，最适合使用数组，因为它相比链表不需要存储左、右子树的指针，更加节省内存空间，通过数组索引即可以随机访问到对应元素。
+
+![img](https://images2015.cnblogs.com/blog/1024555/201612/1024555-20161217182857323-2092264199.png)
+
+该数组从逻辑上讲就是一个堆结构，我们用简单的公式来描述一下堆的定义就是：
+
+大顶堆：arr[i] >= arr[2i+1] && arr[i] >= arr[2i+2]  
+
+小顶堆：arr[i] <= arr[2i+1] && arr[i] <= arr[2i+2] 
+
+#### 常见的堆操作
+
+##### 往堆里面插入一个元素
+
+当我们往堆里面插入一个元素后，我们需要对新的堆进行调整，使其能够满足上述的两个特性，那么这个过程我们称为堆化。
+
+堆化实际上有两个操作，一个是从下往上、一个是从上往下。
+
+**从下往上**
+
+![img](https://pic4.zhimg.com/80/v2-bef40b645a15edce0ff7bf753ad70df7_720w.jpg)
+
+从下往上堆化就是指把该元素与其父节点对比、满足条件后交换位置、继续对比、交换，直到不能交换了。
+
+![img](https://pic3.zhimg.com/80/v2-0ba8e907b1808075eadc85df033a2666_720w.jpg)
+
+**删除堆顶元素**
+
+我们都知道大顶堆、小顶堆的堆顶位置存储的分别是最大值、最小值。
+
+假设我们构造的是一个大顶堆，当我们删除堆顶元素后，我们需要把之前堆内第二大元素移到堆顶位置，依次类推，我们依次删除第二大节点、第三大节点、直到叶子节点。
+
+![img](https://pic4.zhimg.com/80/v2-a82535873f443fb915d383a7acf81443_720w.jpg)
+
+上面的思路其实就是：当我们删除堆顶元素时候，直接把最后一个节点放到堆顶位置，然后从上往下进行堆化。如果父节点的值小于其子节点的值，则进行交换、继续往下对比。
+
+#### 建堆
+
+我们把无序数组构建成一个二叉堆：
+
+如果你需要对无序数组进行从小到大排序，那么你应该构建为大顶堆；
+
+如果你需要对无序数组进行从大到小排序，那么你应该构建为小顶堆。
+
+假设建堆结束之后，数组中的数据已经是按照大顶堆的特性来组织的。
+
+数组中的第一个元素就是堆顶，也就是最大的元素。我们把它跟最后一个元素交换，那最大元素就放到了下标为 n 的位置。这个过程有点类似上面讲的“删除堆顶元素”的操作，当堆顶元素移除之后，我们把下标为 n 的元素放到堆顶，然后再通过堆化的方法，将剩下的 n−1 个元素重新构建成堆。
+
+堆化完成之后，我们再取堆顶的元素，放到下标是 n−1 的位置，一直重复这个过程，直到最后堆中只剩下标为 1 的一个元素，排序工作就完成了。
+
+```python
+def heapify(arr, n, i): 
+    largest = i  
+    l = 2 * i + 1     # left = 2*i + 1 
+    r = 2 * i + 2     # right = 2*i + 2 
+  
+    if l < n and arr[i] < arr[l]: 
+        largest = l 
+  
+    if r < n and arr[largest] < arr[r]: 
+        largest = r 
+  
+    if largest != i: 
+        arr[i],arr[largest] = arr[largest],arr[i]  # 交换
+  
+        heapify(arr, n, largest) 
+  
+def heapSort(arr): 
+    n = len(arr) 
+  
+    # Build a maxheap. 
+    for i in range(n//2-1, -1, -1): # 一个节点的左右子节点的下标分别为2i+1和2i+2，因此只需要考虑前一半元素即可
+        heapify(arr, n, i) 
+  
+    # 一个个交换元素
+    for i in range(n-1, 0, -1): 
+        arr[i], arr[0] = arr[0], arr[i]   # 交换
+        heapify(arr, i, 0) 
+```
+
+### 归并排序
+
+**来源**：归并排序（MERGE-SORT）是利用**归并**的思想实现的排序方法，该算法采用经典的**分治**（divide-and-conquer）策略（分治法将问题**分**(divide)成一些小的问题然后递归求解，而**治(conquer)**的阶段则将分的阶段得到的各答案"修补"在一起，即分而治之)。
+
+![img](https://images2015.cnblogs.com/blog/1024555/201612/1024555-20161218163120151-452283750.png)
+
+可以看到这种结构很像一棵完全二叉树，本文的归并排序我们采用递归去实现（也可采用迭代的方式去实现）。分阶段可以理解为就是递归拆分子序列的过程，递归深度为log2n。
+
+再来看看治阶段，我们需要将两个已经有序的子序列合并成一个有序序列，比如上图中的最后一次合并，要将[4,5,7,8]和[1,2,3,6]两个已经有序的子序列，合并为最终序列[1,2,3,4,5,6,7,8]，来看下实现步骤。
+
+![img](https://images2015.cnblogs.com/blog/1024555/201612/1024555-20161218194508761-468169540.png)
+
+```python
+#利用递归来实现拆分
+
+def Merge(left, right):
+    """
+    合并两个已排序子序列
+    :param left: 第一个已排序的子序列
+    :param right: 第二个已排序的子序列
+    :return:  合并后的排序序列
+    """
+    i = 0
+    j = 0
+    result = []
+    length_left = len(left)
+    length_right = len(right)
+
+    while i < length_left and j < length_right:
+        # 逐个比较两个列表的元素
+        # 小的添加进新列表，大的留下继续比较
+        if left[i] <= right[j]:
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+
+    # 最后加上未比较的元素
+    result.extend(left[i:])
+    result.extend(right[j:])
+    return result
+
+
+def MergeSort(numbers):
+    """
+    归并排序算法入口，采用递归拆分列表
+    :param numbers: 输入待排序数组
+    :return:  排序后的数组
+    """
+    # 递归退出条件判断
+    length = len(numbers)
+    if length <= 1:
+        return numbers
+
+    # 递归拆分，取整
+    mid = length // 2
+    left = MergeSort(numbers[:mid])
+    right = MergeSort(numbers[mid:])
+
+    # 合并排序（归并排序）
+    return Merge(left, right)
 ```
 
