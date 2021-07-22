@@ -1602,3 +1602,154 @@ def MergeSort(numbers):
     return Merge(left, right)
 ```
 
+### 快速排序
+
+* 分而治之思想
+* 类似于归并排序
+* 首先找到一个基准值，一般将序列的第一个元素作为基准值
+* 将比基准值小的元素均放置在基准值左边，大于基准值的放置在右边
+* 然后递归处理左边与右边的序列
+* 时间复杂度：平均O(nlogn), 最坏O(nlogn), 最好O(nlogn)
+* 不稳定
+
+![img](https://www.runoob.com/wp-content/uploads/2019/03/quickSort.gif)
+
+```python
+def partition(arr,low,high): 
+    i = low-1         # 最小元素索引
+    pivot = arr[high]     
+  
+    for j in range(low, high): 
+  
+        # 当前元素小于或等于 pivot 
+        if arr[j] <= pivot: 
+          
+            i = i+1 
+            arr[i],arr[j] = arr[j],arr[i] 
+  
+    arr[i+1],arr[high] = arr[high],arr[i+1] 
+    return i+1
+  
+ 
+# arr[] --> 排序数组
+# low  --> 起始索引
+# high  --> 结束索引
+  
+# 快速排序函数
+def quickSort(arr,low,high): 
+    if low < high: 
+  
+        pi = partition(arr,low,high) 
+  
+        quickSort(arr, low, pi-1) 
+        quickSort(arr, pi+1, high) 
+```
+
+### 计数排序
+
+* 统计每个数字出现的次数，然后进行重新赋值，完成排序
+* 时间复杂度：平均O(n+k), 最坏O(n+k), 最好O(n+k)
+* 稳定
+
+![img](https://www.runoob.com/wp-content/uploads/2019/03/countingSort.gif)
+
+```python
+def CountSort(nums):
+    bucket = [0] * (max(nums) + 1) # 桶的个数
+    for num in nums:  # 将元素值作为键值存储在桶中，记录其出现的次数
+        bucket[num] += 1
+    i = 0  # nums 的索引
+    for j in range(len(bucket)):
+        while bucket[j] > 0:
+            nums[i] = j
+            bucket[j] -= 1
+            i += 1
+```
+
+### 桶排序
+
+* 计数排序的升级版，采用桶映射函数
+* 将数组中最大值与最小值中间的元素，放置在对应的桶中，然后对于每个桶中的元素进行排序
+* 映射函数的选取，影响了性能，尽可能均匀的将元素放置在桶中
+* 最好的情况：均匀放置，最差的情况：所有数据放置在一个桶中
+* 时间复杂度：平均O(n+k), 最坏O(n^2), 最好O(n)
+* 稳定
+
+![img](https://img-blog.csdnimg.cn/20190219081232815.png)
+
+```python
+## 借用了上边的快排
+from quick_sort import QuickSort
+
+def BucketSort(nums, defaultBucketSize = 100):
+    """
+    桶排序
+    :param nums: 输入的待排序数组
+    :param defaultBucketSize: 桶数目，不指定时为100
+    :return: inplace 操作
+    """
+    maxVal, minVal = max(nums), min(nums)
+
+    bucketSize = defaultBucketSize  # 如果没有指定桶的大小，则默认为100
+
+    bucketCount = ((maxVal - minVal) // bucketSize) + 1  # 数据分为 bucketCount 组
+
+    buckets = []  # 二维桶
+
+    for i in range(bucketCount):
+        buckets.append([])
+
+    # 利用函数映射将各个数据放入对应的桶中
+    for num in nums:
+        buckets[(num - minVal) // bucketSize].append(num)
+
+    nums.clear()  # 清空 nums
+    # print(buckets)
+
+    # 对每一个二维桶中的元素进行排序
+    for bucket in buckets:
+        QuickSort(bucket)  # 使用快速排序
+
+        nums.extend(bucket)    # 将排序好的桶依次放入到 nums 中
+```
+
+### 基数排序
+
+* 桶排序的一种扩展
+* 仅仅使用10个桶，标号为0-9
+* 分别对待排序数组，个位，十位， ... 分别进行桶排序
+* 时间复杂度：平均O(nk), 最坏O(nk), 最好O(nk)
+* 稳定
+
+![img](https://www.runoob.com/wp-content/uploads/2019/03/radixSort.gif)
+
+```Python
+def RadixSort(numbers):
+    """
+    基数排序
+    :param numbers:输入待排序数组
+    :return:
+    """
+    bucket_count = 10 ##桶的数目
+    div = 1  # 除数，去除数组中的元素，得到相应的位数
+    loop_count = len(str(max(numbers))) #最大数字的位数决定了循环的次数
+
+    #创建bucket_count个空桶
+    buckets = [[] for i in range(bucket_count)]
+
+    while loop_count:
+        # 将数据存入桶中
+        for num in numbers:
+            buckets[num // div % bucket_count].append(num)
+
+        #将数据依次取出
+        i = 0  # 待排序数组numbers的索引
+        for bucket in buckets:
+            while bucket:
+                numbers[i] = bucket.pop(0)  # 依次取出
+                i += 1
+
+        div *= 10
+        loop_count -= 1
+```
+
