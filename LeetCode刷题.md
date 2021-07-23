@@ -1753,3 +1753,98 @@ def RadixSort(numbers):
         loop_count -= 1
 ```
 
+## 二分查找
+
+**二分查找用途** 对于一个排序列表，在其中查找指定的元素，采用二分查找，时间复杂度为O(logN)
+
+![img](https://www.runoob.com/wp-content/uploads/2019/05/Binary_search_into_array.png)
+
+二分查找基本代码实现思路：https://www.runoob.com/python3/python-binary-search.html
+
+```python
+# 返回 x 在 arr 中的索引，如果不存在返回 -1
+def binarySearch (arr, l, r, x): 
+  
+    # 基本判断
+    if r >= l: 
+  
+        mid = int(l + (r - l)/2)
+  
+        # 元素整好的中间位置
+        if arr[mid] == x: 
+            return mid 
+          
+        # 元素小于中间位置的元素，只需要再比较左边的元素
+        elif arr[mid] > x: 
+            return binarySearch(arr, l, mid-1, x) 
+  
+        # 元素大于中间位置的元素，只需要再比较右边的元素
+        else: 
+            return binarySearch(arr, mid+1, r, x) 
+  
+    else: 
+        # 不存在
+        return -1
+  
+# 测试数组
+arr = [ 2, 3, 4, 10, 40 ] 
+x = 10
+  
+# 函数调用
+result = binarySearch(arr, 0, len(arr)-1, x) 
+  
+if result != -1: 
+    print ("元素在数组中的索引为 %d" % result )
+else: 
+    print ("元素不在数组中")
+```
+
+### [69. x 的平方根](https://leetcode-cn.com/problems/sqrtx/)
+
+```Python
+class Solution(object):
+    def mySqrt(self, x):
+        """
+        :type x: int
+        :rtype: int
+        """
+        l, r = 0, x // 2 + 1
+        while l <= r:
+            m = l + (r-l)//2
+            s1 = m ** 2
+            s2 = (m+1) ** 2
+            if s1 < x and s2 > x or s1 == x:
+                return m
+            if s2 == x:
+                return m + 1
+            if s1 > x:
+                r = m - 1
+            elif s2 < x:
+                l = m + 1
+        return m
+执行用时：28 ms, 在所有 Python 提交中击败了75.78%的用户
+内存消耗：12.9 MB, 在所有 Python 提交中击败了86.18%的用户
+```
+
+### [744. 寻找比目标字母大的最小字母](https://leetcode-cn.com/problems/find-smallest-letter-greater-than-target/)
+
+```Python
+class Solution(object):
+    def nextGreatestLetter(self, letters, target):
+        """
+        :type letters: List[str]
+        :type target: str
+        :rtype: str
+        """
+        l, r = 0,len(letters)-1
+        while l <= r:
+            m = l + (r-l)//2
+            if letters[m] <= target:
+                l = m + 1
+            else:
+                r = m - 1
+        return letters[l] if l<len(letters) else letters[0]
+执行用时：24 ms, 在所有 Python 提交中击败了94.89%的用户
+内存消耗：14.3 MB, 在所有 Python 提交中击败了64.23%的用户
+```
+
