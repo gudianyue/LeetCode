@@ -1848,3 +1848,164 @@ class Solution(object):
 内存消耗：14.3 MB, 在所有 Python 提交中击败了64.23%的用户
 ```
 
+### [540. 有序数组中的单一元素](https://leetcode-cn.com/problems/single-element-in-a-sorted-array/)
+
+**解法**：由于题目限定是只有一个元素只出现一次，其余元素必定出现两次，可以从下标0开始比较下一位是否和自己相同，不是指针前移2位，继续比较。但是不满足O(logn)的时间要求。
+
+```python
+class Solution(object):
+    def singleNonDuplicate(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        n = len(nums)
+        index = 0
+        while index < n-1:
+            if nums[index + 1] == nums[index]:
+                index += 2
+            else:
+                break
+        return nums[index]
+执行用时：16 ms, 在所有 Python 提交中击败了90.57%的用户
+内存消耗：14.2 MB, 在所有 Python 提交中击败了93.71%的用户
+```
+
+**解法**：二分查找。由于只有一个元素是出现一次，那么数组长度必定为奇数，利用中间值检查，如果中间值和左右都不相等，则是我们要寻找的目标；如果和左边相等，则目标值在左边；如果和右边相等，则目标值在右边。
+
+```Python
+class Solution:
+    def singleNonDuplicate(self, nums: List[int]) -> int:
+        '''
+        题目要求时间复杂度为log(n)，因此采用二分法
+        利用二分法，待查找的元素在左右两边奇数那个子列中，这样比顺序查找降低时间复杂度
+        '''
+        l = 0
+        r = len(nums) - 1   
+        while l < r:
+            m = l + (r - l) // 2
+            ## 右边子序列为偶数
+            halves_are_even = (r - m) % 2 == 0
+            
+            if nums[m + 1] == nums[m]:
+            # 如果中间的元素与右边元素相等，且右边为偶数，那么去除一个之后，右边序列变为奇数，待查找的元素在右侧子列
+                if halves_are_even:
+                    l = m + 2
+                ## 右侧为奇数列，去除一个之后变成偶数，那么待查找的元素位于左侧子列
+                else:
+                    r = m - 1
+            elif nums[m - 1] == nums[m]:
+                if halves_are_even:
+                    r = m - 2
+                else:
+                    l = m + 1
+            ## 中间元素刚好为待查找的元素，直接返回
+            else:
+                return nums[m]
+        return nums[l] ## return[r]也可以，此时必是左右指针都指向了目标元素
+执行用时: 8 ms, 在所有 Python 提交中击败了100%的用户
+内存消耗: 14.4 MB, 在所有 Python 提交中击败了52%的用户
+```
+
+### [278. 第一个错误的版本](https://leetcode-cn.com/problems/first-bad-version/)
+
+```python
+# The isBadVersion API is already defined for you.
+# @param version, an integer
+# @return a bool
+# def isBadVersion(version):
+
+class Solution(object):
+    def firstBadVersion(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        if n < 2:
+            return n
+        l, r = 1, n
+        while l <= r:
+            m = l + (r-l)//2
+            if isBadVersion(m): ## 第一个错误的版本必定在r的右边
+                r = m - 1
+            else:
+                l = m + 1
+        return l
+执行用时：20 ms, 在所有 Python 提交中击败了39.75%的用户
+内存消耗：12.9 MB, 在所有 Python 提交中击败了85.38%的用户
+## 删除第一个判断会快很多
+执行用时：12 ms, 在所有 Python 提交中击败了90.81%的用户
+内存消耗：13 MB, 在所有 Python 提交中击败了50.70%的用户
+```
+
+### [153. 寻找旋转排序数组中的最小值](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/)
+
+```python
+class Solution(object):
+    def findMin(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        if nums[-1] > nums[0] or len(nums) == 1:
+            return nums[0]
+        l, r = 0, len(nums)-1
+        while l<r:
+            m = l + (r-l)//2
+            if nums[m] < nums[m-1]:
+                return nums[m]
+            if nums[m] > nums[m+1]:
+                return nums[m+1]
+            if nums[m] > nums[-1]: ## 比最后一个大，证明最小值在m的右边
+                l = m + 1
+            elif nums[m] < nums[-1]:
+                r = m - 1
+执行用时：16 ms, 在所有 Python 提交中击败了83.89%的用户
+内存消耗：13 MB, 在所有 Python 提交中击败了83.89%的用户
+```
+
+### [34. 在排序数组中查找元素的第一个和最后一个位置](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
+
+```python
+class Solution(object):
+    def searchRange(self, nums, target):
+        """
+        :type nums: List[int]
+        :type target: int
+        :rtype: List[int]
+        """
+        """
+        两次二分查找，一次找左边界，一次找右边界
+        """
+        out = []
+        if len(nums) < 1:
+            return [-1, -1]
+        l, r = 0, len(nums)-1
+        while l <= r: ## 找左边界
+            m = l + (r-l)//2
+            if nums[m] == target:
+                if m == 0 or nums[m-1] != target:
+                    out.append(m)
+                    break
+                else:
+                    r = m-1
+            elif nums[m] > target:
+                r = m - 1
+            else:
+                l = m + 1
+        l, r = 0, len(nums)-1
+        while l <= r: ## 找右边界
+            m = l + (r-l)//2
+            if nums[m] == target:
+                if m == len(nums)-1 or nums[m+1] != target:
+                    out.append(m)
+                    break
+                else:
+                    l = m+1
+            elif nums[m] > target:
+                r = m - 1
+            else:
+                l = m + 1
+        return out if out else [-1, -1]
+```
+
