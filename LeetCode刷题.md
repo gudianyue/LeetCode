@@ -2009,3 +2009,113 @@ class Solution(object):
         return out if out else [-1, -1]
 ```
 
+## 数组和矩阵
+
+### [283. 移动零](https://leetcode-cn.com/problems/move-zeroes/)
+
+**解法**：快慢指针
+
+```python
+class Solution(object):
+    def moveZeroes(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: None Do not return anything, modify nums in-place instead.
+        """
+        if len(nums) < 2:
+            return nums
+        slow, fast = 0, 1
+        while fast < len(nums):
+            if nums[slow] == 0 and nums[fast] != 0:
+                nums[slow], nums[fast] = nums[fast], nums[slow]
+                slow += 1
+                fast += 1
+            elif nums[slow] == 0:
+                fast += 1
+            else:
+                fast += 1
+                slow += 1
+        return nums
+执行用时：16 ms, 在所有 Python 提交中击败了93.53%的用户
+内存消耗：13.7 MB, 在所有 Python 提交中击败了67.02%的用户
+```
+
+### [566. 重塑矩阵](https://leetcode-cn.com/problems/reshape-the-matrix/)
+
+**解法**：将对应元素直接填入。
+
+```Python
+class Solution(object):
+    def matrixReshape(self, mat, r, c):
+        """
+        :type mat: List[List[int]]
+        :type r: int
+        :type c: int
+        :rtype: List[List[int]]
+        """
+        row, column = len(mat), len(mat[0])
+        if row * column != r * c:
+            return mat
+        out = [[0]*c for _ in range(r)]
+        for i in range(row):
+            for j in range(column):
+                index = i * column + j
+                out[index // c][index % c] = mat[i][j]
+        return out 
+执行用时：20 ms, 在所有 Python 提交中击败了90.53%的用户
+内存消耗：13.7 MB, 在所有 Python 提交中击败了74.21%的用户
+```
+
+### [485. 最大连续 1 的个数](https://leetcode-cn.com/problems/max-consecutive-ones/)
+
+```python
+class Solution(object):
+    def findMaxConsecutiveOnes(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        out = 0
+        res = 0
+        for i in range(len(nums)):
+            if nums[i] == 1:
+                res += 1
+            else:
+                if res > out:
+                    out = res
+                res = 0
+        if res > out:
+            out = res
+        return out
+执行用时：40 ms, 在所有 Python 提交中击败了90.82%的用户
+内存消耗：13.4 MB, 在所有 Python 提交中击败了33.25%的用户
+```
+
+### [240. 搜索二维矩阵 II](https://leetcode-cn.com/problems/search-a-2d-matrix-ii/)
+
+```python
+class Solution(object):
+    def searchMatrix(self, matrix, target):
+        """
+        :type matrix: List[List[int]]
+        :type target: int
+        :rtype: bool
+        """
+        """
+        从右上角开始比较
+        """
+        if not matrix:
+            return False
+        i, j = 0, len(matrix[0]) -1
+        while(i < len(matrix) and j >= 0):
+            if matrix[i][j] == target:
+                return True
+            elif target > matrix[i][j]:
+                i += 1
+            else:
+                j -= 1
+        return False
+执行用时：132 ms, 在所有 Python 提交中击败了91.99%的用户
+内存消耗：19 MB, 在所有 Python 提交中击败了51.32%的用户
+```
+
