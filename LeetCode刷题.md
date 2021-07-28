@@ -2119,3 +2119,192 @@ class Solution(object):
 内存消耗：19 MB, 在所有 Python 提交中击败了51.32%的用户
 ```
 
+### [378. 有序矩阵中第 K 小的元素](https://leetcode-cn.com/problems/kth-smallest-element-in-a-sorted-matrix/)
+
+**解法**：堆排序
+
+```Python
+class Solution(object):
+    def kthSmallest(self, matrix, k):
+        """
+        :type matrix: List[List[int]]
+        :type k: int
+        :rtype: int
+        """
+        '''
+        前k小的元素，一看就是利用堆排序，构建大根堆，自己实现构建堆排序，找第k小元素
+        '''
+        nums = [y for x in matrix for y in x]
+        left = lambda i: 2 * i + 1
+        right = lambda i: 2 * i + 2
+        self.heap_size = 0
+        def HeapSort(nums):
+            BuildMaxHeap(nums)
+            for i in range(len(nums)-1, -1, -1):
+                nums[i], nums[0] = nums[0], nums[i]
+                self.heap_size -= 1
+                KeepHeap(nums, 0)
+        
+        def BuildMaxHeap(nums):
+            self.heap_size = len(nums)
+            for i in range(len(nums)//2-1, -1, -1):
+                KeepHeap(nums, i)
+
+        def KeepHeap(nums, i):
+            l, r = left(i), right(i)
+            largest = l if l < self.heap_size and nums[l] > nums[i] else i
+            largest = r if r < self.heap_size and nums[r] > nums[largest] else largest
+            if i != largest:
+                nums[i], nums[largest] = nums[largest], nums[i]
+                KeepHeap(nums, largest)
+        
+        HeapSort(nums)
+        return nums[k-1]
+执行用时：636 ms, 在所有 Python 提交中击败了8.54%的用户
+内存消耗：16.5 MB, 在所有 Python 提交中击败了99.50%的用户
+```
+
+**归并排序**
+
+```Python
+class Solution:
+    def kthSmallest(self, matrix: List[List[int]], k: int) -> int:
+        n = len(matrix) #注：题目中这个矩阵是n*n的，所以长宽都是n
+
+        pq = [(matrix[i][0], i, 0) for i in range(n)] #取出第一列候选人
+        #matrix[i][0]是具体的值，后面的(i,0)是在记录候选人在矩阵中的位置，方便每次右移添加下一个候选人
+
+        heapq.heapify(pq) #变成一个heap
+
+        for i in range(k - 1): #一共弹k次：这里k-1次，return的时候1次
+            num, x, y = heapq.heappop(pq) #弹出候选人里最小一个
+            if y != n - 1: #如果这一行还没被弹完
+                heapq.heappush(pq, (matrix[x][y + 1], x, y + 1)) #加入这一行的下一个候选人
+        
+        return heapq.heappop(pq)[0]
+执行用时：76 ms, 在所有 Python 提交中击败了46.23%的用户
+内存消耗：16.8 MB, 在所有 Python 提交中击败了62.31%的用户
+```
+
+**二分查找**
+
+```python
+class Solution(object):
+    def kthSmallest(self, matrix, k):
+        """
+        :type matrix: List[List[int]]
+        :type k: int
+        :rtype: int
+        """
+        n = len(matrix)
+        def check(mid):
+            i, j = n-1, 0
+            num = 0
+            while i >=0 and j < n:
+                if matrix[i][j] <= mid:
+                    num += i + 1
+                    j += 1
+                else:
+                    i -= 1
+            return num >= k
+
+        left, right = matrix[0][0], matrix[-1][-1]
+        while left < right:
+            mid = (left + right) // 2
+            if check(mid):
+                right = mid
+            else:
+                left = mid + 1
+        return left
+执行用时：28 ms, 在所有 Python 提交中击败了86.43%的用户
+内存消耗：17.1 MB, 在所有 Python 提交中击败了21.11%的用户
+```
+
+### [645. 错误的集合](https://leetcode-cn.com/problems/set-mismatch/)
+
+**解法**：https://leetcode-cn.com/problems/set-mismatch/solution/645cuo-wu-de-ji-he-shu-zu-bian-li-ha-xi-94hcp/
+
+纯数学的角度解题：
+sum(nums) - sum(set(nums)) = 重复的数字
+(1 + len(nums)) * len(nums) // 2 - sum(set(nums)) = 丢失的数字
+
+```python
+class Solution(object):
+    def findErrorNums(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: List[int]
+        """
+        l, total = len(nums), sum(set(nums))
+        return [sum(nums)-total, (l+1)*l//2 - total]
+```
+
+### [287. 寻找重复数](https://leetcode-cn.com/problems/find-the-duplicate-number/)
+
+**解法**：二分法寻找。采用二分法，多次遍历数组，以时间换取空间。具体操作：数字在1到n之间，二分整个区间，得到中间元素mid=(n+1)//2；如果数组中小于mid的数字的个数大于mid，那么重复的数字存在于0到mid之间
+
+```python
+class Solution(object):
+    def findDuplicate(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        n = len(nums)
+        l, r = 1, n
+        while l < r:
+            mid = l + (r-l) // 2
+            count = 0
+            for num in nums:
+                if num <= mid:
+                    count += 1
+            if count > mid:
+                r = mid
+            else:
+                l = mid + 1
+        return l
+执行用时：240 ms, 在所有 Python 提交中击败了27.31%的用户
+内存消耗：21 MB, 在所有 Python 提交中击败了76.42%的用户
+```
+
+**暴力**：直接把找到的数字加入到新的数组中，当遇到重复数字时返回。
+
+```python
+class Solution(object):
+    def findDuplicate(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        l = set()
+        for num in nums:
+            if num not in l:
+                l.add(num)
+            else:
+                return num
+执行用时：64 ms, 在所有 Python 提交中击败了89.38%的用户
+内存消耗：27.3 MB, 在所有 Python 提交中击败了7.45%的用户
+```
+
+**双指针**：
+
+```python
+class Solution(object):
+    def findDuplicate(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        slow, fast = 0, 0
+        while True:
+            slow, fast = nums[slow], nums[nums[fast]]
+            if slow == fast:
+                break
+        slow = 0
+        while slow != fast:
+            slow, fast = nums[slow], nums[fast]
+        return slow
+执行用时：72 ms, 在所有 Python 提交中击败了85.66%的用户
+内存消耗：21 MB, 在所有 Python 提交中击败了78.49%的用户
+```
+
