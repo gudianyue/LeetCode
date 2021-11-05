@@ -522,3 +522,79 @@ class Solution(object):
 通过测试用例：18 / 18
 ```
 
+#### [剑指 Offer 05. 替换空格](https://leetcode-cn.com/problems/ti-huan-kong-ge-lcof/)
+
+简单粗暴：直接遍历整个字符串，遇到空格直接换成指定字符。
+
+```python
+class Solution(object):
+    def replaceSpace(self, s):
+        """
+        :type s: str
+        :rtype: str
+        """
+        out = str()
+        r = "%20"
+        for char in s:
+            if char == ' ':
+                out = out + r
+            else:
+                out = out + char
+        return out
+执行用时：16 ms, 在所有 Python 提交中击败了65.76%的用户
+内存消耗：12.9 MB, 在所有 Python 提交中击败了87.00%的用户
+通过测试用例：27 / 27
+```
+
+内置函数replace()，不知道会不会被打😂😂😂
+
+```python
+class Solution(object):
+    def replaceSpace(self, s):
+        """
+        :type s: str
+        :rtype: str
+        """
+        return s.replace(' ', '%20')
+执行用时：8 ms, 在所有 Python 提交中击败了98.69%的用户
+内存消耗：13 MB, 在所有 Python 提交中击败了76.05%的用户
+通过测试用例：27 / 27
+```
+
+#### [剑指 Offer 58 - II. 左旋转字符串](https://leetcode-cn.com/problems/zuo-xuan-zhuan-zi-fu-chuan-lcof/)
+
+简单粗暴的划分重组
+
+```python
+class Solution(object):
+    def reverseLeftWords(self, s, n):
+        """
+        :type s: str
+        :type n: int
+        :rtype: str
+        """
+        return s[n:] + s[:n]
+执行用时：24 ms, 在所有 Python 提交中击败了31.71%的用户
+内存消耗：13.1 MB, 在所有 Python 提交中击败了92.65%的用户
+通过测试用例：34 / 34
+```
+
+遍历重组
+
+```python
+class Solution(object):
+    def reverseLeftWords(self, s, n):
+        """
+        :type s: str
+        :type n: int
+        :rtype: str
+        """
+        out = []
+        for i in range(n, n+len(s)):
+            out.append(s[i%len(s)])
+        return ''.join(out)
+执行用时：24 ms, 在所有 Python 提交中击败了31.71%的用户
+内存消耗：13.9 MB, 在所有 Python 提交中击败了5.30%的用户
+通过测试用例：34 / 34
+```
+
