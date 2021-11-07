@@ -598,3 +598,240 @@ class Solution(object):
 通过测试用例：34 / 34
 ```
 
+#### [剑指 Offer 03. 数组中重复的数字](https://leetcode-cn.com/problems/shu-zu-zhong-zhong-fu-de-shu-zi-lcof/)
+
+由于指定了数字不会超出数组的长度，可以在遍历数组的时候将数字交换到对应的下标位置。交换的规则是如果数字和以他作为下标的数组存储数字不相等，则交换。然后检查当前下标是否和下标处数字对应，没有就继续交换。由于有重复数字，当我们遇到需要交换的数字和以他为下标的数组存储的数字相等时，说明找到了重复的数字，返回该数字。
+
+```python
+class Solution(object):
+    def findRepeatNumber(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        i = 0
+        while i < len(nums):
+            if nums[i] == i:
+                i += 1
+                continue
+            if nums[nums[i]] == nums[i]:
+                return nums[i]
+            else:
+                nums[nums[i]], nums[i] = nums[i], nums[nums[i]]
+        return -1
+执行用时：24 ms, 在所有 Python 提交中击败了87.25%的用户
+内存消耗：18.8 MB, 在所有 Python 提交中击败了99.45%的用户
+通过测试用例：25 / 25
+```
+
+#### [剑指 Offer 53 - I. 在排序数组中查找数字 I](https://leetcode-cn.com/problems/zai-pai-xu-shu-zu-zhong-cha-zhao-shu-zi-lcof/)
+
+遍历数组，先判断是否为空，接着判断第一个值（最小）和最后一个值（最大）的情况，最后再开始遍历比较，遇到大的就停止。
+
+```Python
+class Solution(object):
+    def search(self, nums, target):
+        """
+        :type nums: List[int]
+        :type target: int
+        :rtype: int
+        """
+        num = 0
+        if not nums:
+            return num
+        if nums[0] > target or nums[-1] < target:
+            return num
+        for i in nums:
+            if i < target:
+                continue
+            elif i == target:
+                num += 1
+            else:
+                break
+        return num
+执行用时：12 ms, 在所有 Python 提交中击败了98.08%的用户
+内存消耗：13.3 MB, 在所有 Python 提交中击败了72.92%的用户
+通过测试用例：88 / 88
+```
+
+#### [剑指 Offer 53 - II. 0～n-1中缺失的数字](https://leetcode-cn.com/problems/que-shi-de-shu-zi-lcof/)
+
+由于是排序的数组且数字唯一，可以遍历数组，当下标与数字不一致的时候，此时下标就是缺失的数字。如果所有都一致，那就是缺失数组长度的数字（数组长度为n，下标由0开始，最大就是n-1，没有n）。
+
+```python
+class Solution(object):
+    def missingNumber(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        for i in range(len(nums)):
+            if nums[i] != i:
+                return i
+        return len(nums)
+执行用时：20 ms, 在所有 Python 提交中击败了72.94%的用户
+内存消耗：13.9 MB, 在所有 Python 提交中击败了68.72%的用户
+通过测试用例：122 / 122
+```
+
+二分法，一样是判断下标和数字对应不对应。
+
+```Python
+class Solution(object):
+    def missingNumber(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        i, j = 0, len(nums) - 1
+        while i <= j:
+            m = (i + j) // 2
+            if nums[m] == m: i = m + 1  #如果数组内所有数字都和下标对应，则i,j会相等，最后一步会使得i+1>j，此时刚好i就是数组长度，即缺失值
+            else: j = m - 1
+        return i
+执行用时：12 ms, 在所有 Python 提交中击败了99.07%的用户
+内存消耗：14 MB, 在所有 Python 提交中击败了23.15%的用户
+通过测试用例：122 / 122
+```
+
+#### [剑指 Offer 04. 二维数组中的查找](https://leetcode-cn.com/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof/)
+
+参考：https://leetcode-cn.com/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof/solution/gao-su-jie-fa-qing-xi-tu-jie-by-ml-zimingmeng/
+
+```Python
+class Solution(object):
+    def findNumberIn2DArray(self, matrix, target):
+        """
+        :type matrix: List[List[int]]
+        :type target: int
+        :rtype: bool
+        """
+        if not matrix:
+            return False
+        row, col = len(matrix), len(matrix[0])
+        n, m = row-1, 0
+        while n >= 0 and m < col:#从左下角开始，比它小，则这一整行都不可能是，往上一行找。比它大，要么在这一列中，要么没有。
+            if matrix[n][m] == target:
+                return True
+            elif matrix[n][m] > target:
+                n -= 1
+            else:
+                m += 1
+        return False
+执行用时：24 ms, 在所有 Python 提交中击败了63.28%的用户
+内存消耗：17.3 MB, 在所有 Python 提交中击败了31.82%的用户
+通过测试用例：129 / 129
+```
+
+复杂度分析
+时间复杂度：O(m+n)。m 和 n 分别为行数和列数。最坏情况下，我们从左下角移动到右上角，经过的路径长度为。
+空间复杂度：O(1)。
+
+二分查找：分行列，以对角线移动
+
+```Python
+class Solution(object):
+    def findNumberIn2DArray(self, matrix, target):
+        """
+        :type matrix: List[List[int]]
+        :type target: int
+        :rtype: bool
+        """
+        def binary_search(matrix, target, start, vertical):
+            loc = start
+            hi = len(matrix) - 1 if vertical else len(matrix[0]) - 1
+            while loc <= hi:
+                mid = (loc+hi) // 2
+                if vertical:
+                    if matrix[mid][start] > target:
+                        hi = mid - 1
+                    elif matrix[mid][start] <target:
+                        loc = mid + 1
+                    else:
+                        return True
+                else:
+                    if matrix[start][mid] > target:
+                        hi = mid - 1
+                    elif matrix[start][mid] < target:
+                        loc = mid + 1
+                    else:
+                        return True
+            return False
+        if not matrix:
+            return False
+        for i in range(min(len(matrix), len(matrix[0]))):
+            vertical_found = binary_search(matrix, target, i, True)
+            horizontal_found = binary_search(matrix, target, i, False)
+            if vertical_found or horizontal_found:
+                return True
+        return False
+执行用时：24 ms, 在所有 Python 提交中击败了63.28%的用户
+内存消耗：17.2 MB, 在所有 Python 提交中击败了57.76%的用户
+通过测试用例：129 / 129
+```
+
+#### 复杂度分析
+
+ if min(n,m)\==n：(lgn+lgm)+(lg(n-1)+lg(m-1))+(lg1+lg(m-n+1)) =lgn!+lg(m!/n!) =lg(n!*(m!/n!)) =lg(m!) 
+
+同理：if min(n,m)\==m：lg(n!) 因此时间复杂度为O(lgk),k=max(n,m)。
+
+- 时间复杂度：O(lgk),k=max(n,m)
+- 空间复杂度：O(1)。
+
+
+
+递归
+
+在 midmid 列寻找满足条件 matrix[row - 1][mid]<target<matrix[row][mid]matrix[row−1][mid]<target<matrix[row][mid] 的点，比如当 row=3,mid=2row=3,mid=2 时（黄色区域），9<target<149<target<14，这时我们可以判断出来 targettarget 一定在左下或者右上区域：
+
+由 target>9target>9，可知 targettarget 在 99 的右侧或下侧；
+由 target<14target<14，可知 targettarget 在 1414 的上侧或左侧；
+因此对左下和右上两个区域进行递归，直到遇到终止条件进行回溯，返回结果。 终止条件为：
+
+区域中没有元素；
+targettarget 大于深色区域右下角的值（最大值）或小于深色区域左上角的值（最小值）
+其中，找到黄色点的方法如下：
+
+列索引 midmid 采用二分查找;
+行索引沿 midmid 列从上向下移动，并保持该位置元素小于 targettarget。
+
+![TIM截图20200229160734.png](https://pic.leetcode-cn.com/00917701153b12d2819e2e0ed681737390b8e5bd26ea1d0c6abd7dfe87c8c927-TIM%E6%88%AA%E5%9B%BE20200229160734.png)
+
+```python
+class Solution(object):
+    def findNumberIn2DArray(self, matrix, target):
+        """
+        :type matrix: List[List[int]]
+        :type target: int
+        :rtype: bool
+        """
+        if not matrix:
+            return False
+        def search_backtrack(left, up, right, down):
+            if left > right or up > down:
+                return False
+            elif target < matrix[up][left] or target > matrix[down][right]:
+                return False
+
+            mid = left + (right - left) // 2
+
+            row = up
+            while row <= down and matrix[row][mid] <= target:
+                if matrix[row][mid] == target:
+                    return True
+                row += 1
+
+            return search_backtrack(left, row, mid - 1, down) or search_backtrack(mid + 1, up, right, row - 1)
+
+        return search_backtrack(0, 0, len(matrix[0]) - 1, len(matrix) - 1)
+执行用时：24 ms, 在所有 Python 提交中击败了63.28%的用户
+内存消耗：17.4 MB, 在所有 Python 提交中击败了6.90%的用户
+通过测试用例：129 / 129
+```
+
+#### 复杂度分析
+
+- 时间复杂度：O(nlgn)。
+- 空间复杂度：O(lgn)。
+
