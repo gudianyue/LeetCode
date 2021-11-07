@@ -770,7 +770,7 @@ class Solution(object):
 通过测试用例：129 / 129
 ```
 
-#### 复杂度分析
+复杂度分析
 
  if min(n,m)\==n：(lgn+lgm)+(lg(n-1)+lg(m-1))+(lg1+lg(m-n+1)) =lgn!+lg(m!/n!) =lg(n!*(m!/n!)) =lg(m!) 
 
@@ -783,18 +783,18 @@ class Solution(object):
 
 递归
 
-在 midmid 列寻找满足条件 matrix[row - 1][mid]<target<matrix[row][mid]matrix[row−1][mid]<target<matrix[row][mid] 的点，比如当 row=3,mid=2row=3,mid=2 时（黄色区域），9<target<149<target<14，这时我们可以判断出来 targettarget 一定在左下或者右上区域：
+在 mid列寻找满足条件 matrix\[row - 1][mid]<target<matrix\[row][mid]的点，比如当 row=3,mid=2时（黄色区域），9<target<14，这时我们可以判断出来 target一定在左下或者右上区域：
 
-由 target>9target>9，可知 targettarget 在 99 的右侧或下侧；
-由 target<14target<14，可知 targettarget 在 1414 的上侧或左侧；
+由 target>9，可知 target 在 9 的右侧或下侧；
+由 target<14，可知 target 在14 的上侧或左侧；
 因此对左下和右上两个区域进行递归，直到遇到终止条件进行回溯，返回结果。 终止条件为：
 
 区域中没有元素；
 targettarget 大于深色区域右下角的值（最大值）或小于深色区域左上角的值（最小值）
 其中，找到黄色点的方法如下：
 
-列索引 midmid 采用二分查找;
-行索引沿 midmid 列从上向下移动，并保持该位置元素小于 targettarget。
+列索引 mid 采用二分查找;
+行索引沿 mid列从上向下移动，并保持该位置元素小于 target。
 
 ![TIM截图20200229160734.png](https://pic.leetcode-cn.com/00917701153b12d2819e2e0ed681737390b8e5bd26ea1d0c6abd7dfe87c8c927-TIM%E6%88%AA%E5%9B%BE20200229160734.png)
 
@@ -830,7 +830,7 @@ class Solution(object):
 通过测试用例：129 / 129
 ```
 
-#### 复杂度分析
+复杂度分析
 
 - 时间复杂度：O(nlgn)。
 - 空间复杂度：O(lgn)。
