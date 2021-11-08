@@ -835,3 +835,424 @@ class Solution(object):
 - 时间复杂度：O(nlgn)。
 - 空间复杂度：O(lgn)。
 
+#### [剑指 Offer 11. 旋转数组的最小数字](https://leetcode-cn.com/problems/xuan-zhuan-shu-zu-de-zui-xiao-shu-zi-lcof/)
+
+简单粗暴：由于是排序数组的旋转，则遇到反序的第一个数字就是，如果没有反序，则是第一个。首先检测只有一个数字的情况。
+
+```Python
+class Solution(object):
+    def minArray(self, numbers):
+        """
+        :type numbers: List[int]
+        :rtype: int
+        """
+        if len(numbers) == 1:
+            return numbers[0]
+        for i in range(len(numbers)-1):
+            if numbers[i+1] < numbers[i]:
+                return numbers[i+1]
+        return numbers[0]
+执行用时：24 ms, 在所有 Python 提交中击败了22.11%的用户
+内存消耗：13.5 MB, 在所有 Python 提交中击败了20.03%的用户
+通过测试用例：192 / 192
+```
+
+优化一下
+
+```python
+class Solution(object):
+    def minArray(self, numbers):
+        """
+        :type numbers: List[int]
+        :rtype: int
+        """
+        left = numbers[0]
+        for i in numbers[1:]:
+            if i < left:
+                return i
+        return left
+执行用时：16 ms, 在所有 Python 提交中击败了86.29%的用户
+内存消耗：13.4 MB, 在所有 Python 提交中击败了41.60%的用户
+通过测试用例：192 / 192
+```
+
+二分法
+
+```python
+class Solution(object):
+    def minArray(self, numbers):
+        """
+        :type numbers: List[int]
+        :rtype: int
+        """
+        left, right = 0, len(numbers)-1
+        while left < right:
+            mid = (left + right) // 2
+            if numbers[mid] > numbers[right]:#寻找最小值，由于mid>right，所以mid本身不可能是最小值
+                left = mid + 1
+            elif numbers[mid] < numbers[right]:#由于mid<right，所以mid本身可能是最小值，不能排除mid
+                right = mid
+            else:#二者相等，则不能判断在何处。按照排序数组的规律，最右边应该是最大的，寻找最小值，最右边界往回缩。
+                right -= 1
+        return numbers[left]
+执行用时：20 ms, 在所有 Python 提交中击败了57.39%的用户
+内存消耗：13.2 MB, 在所有 Python 提交中击败了83.80%的用户
+通过测试用例：192 / 192
+```
+
+#### [剑指 Offer 50. 第一个只出现一次的字符](https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/)
+
+简单粗暴：两个表，一个表保存出现过的字母，另一个表只保存出现一次的字母。
+
+```python
+class Solution(object):
+    def firstUniqChar(self, s):
+        """
+        :type s: str
+        :rtype: str
+        """
+        if not s:
+            return ' '
+        appears = []
+        once = []
+        for char in s:
+            if char in appears:
+                if char in once:
+                    once.remove(char)
+                continue
+            else:
+                once.append(char)
+                appears.append(char)
+        if not once:
+            return ' '
+        else:
+            return once[0]
+执行用时：136 ms, 在所有 Python 提交中击败了39.27%的用户
+内存消耗：13.5 MB, 在所有 Python 提交中击败了35.27%的用户
+通过测试用例：104 / 104
+```
+
+哈希表：遍历字符串，建立字符和字符出现位置键值对的哈希表。当出现重复字符时，将键值改为-1。遍历哈希表键值，找出不为-1的最小值。
+
+```python 
+class Solution(object):
+    def firstUniqChar(self, s):
+        """
+        :type s: str
+        :rtype: str
+        """
+        if not s:
+            return ' '
+        appears = {}
+        for i, char in enumerate(s):
+            if char in appears:
+                appears[char] = -1
+            else:
+                appears[char] = i
+        first = len(s)
+        for pos in appears.values():
+            if pos != -1 and pos < first:
+                first = pos
+        return ' ' if first == len(s) else s[first]
+执行用时：60 ms, 在所有 Python 提交中击败了88.85%的用户
+内存消耗：13.6 MB, 在所有 Python 提交中击败了25.94%的用户
+通过测试用例：
+104 / 104
+```
+
+方法三：队列
+思路与算法
+
+我们也可以借助队列找到第一个不重复的字符。队列具有「先进先出」的性质，因此很适合用来找出第一个满足某个条件的元素。
+
+具体地，我们使用与方法二相同的哈希映射，并且使用一个额外的队列，按照顺序存储每一个字符以及它们第一次出现的位置。当我们对字符串进行遍历时，设当前遍历到的字符为 cc，如果 cc 不在哈希映射中，我们就将 cc 与它的索引作为一个二元组放入队尾，否则我们就需要检查队列中的元素是否都满足「只出现一次」的要求，即我们不断地根据哈希映射中存储的值（是否为 -1−1）选择弹出队首的元素，直到队首元素「真的」只出现了一次或者队列为空。
+
+在遍历完成后，如果队列为空，说明没有不重复的字符，返回空格，否则队首的元素即为第一个不重复的字符以及其索引的二元组。
+
+小贴士
+
+在维护队列时，我们使用了「延迟删除」这一技巧。也就是说，即使队列中有一些字符出现了超过一次，但它只要不位于队首，那么就不会对答案造成影响，我们也就可以不用去删除它。只有当它前面的所有字符被移出队列，它成为队首时，我们才需要将它移除。
+链接：https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/solution/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-by-3zqv5/
+
+```python
+class Solution(object):
+    def firstUniqChar(self, s):
+        """
+        :type s: str
+        :rtype: str
+        """
+        if not s:
+            return ' '
+        position = {}
+        q = collections.deque()
+        for i, char in enumerate(s):
+            if char not in position:
+                position[char] = i
+                q.append(s[i])
+            else:
+                position[char] = -1
+                while q and position[q[0]] == -1:
+                    q.popleft()
+        return ' ' if not q else q[0]
+执行用时：100 ms, 在所有 Python 提交中击败了48.73%的用户
+内存消耗：13.3 MB, 在所有 Python 提交中击败了81.21%的用户
+通过测试用例：104 / 104
+```
+
+#### [剑指 Offer 32 - I. 从上到下打印二叉树](https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-lcof/)
+
+广度优先搜索
+
+```Python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def levelOrder(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[int]
+        """
+        def bfs(tree):
+            queue = collections.deque()
+            queue.append(tree)
+            l = []
+            l.append(tree.val)
+            while queue:
+                temp = queue.popleft()
+                if temp.left:
+                    l.append(temp.left.val)
+                    queue.append(temp.left)
+                if temp.right:
+                    l.append(temp.right.val)
+                    queue.append(temp.right)
+            return l
+        if root:
+            return bfs(root)
+        else:
+            return []
+执行用时：16 ms, 在所有 Python 提交中击败了88.89%的用户
+内存消耗：13.6 MB, 在所有 Python 提交中击败了5.10%的用户
+通过测试用例：34 / 34
+```
+
+另一种写法
+
+```Python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def levelOrder(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[int]
+        """
+        def bfs(tree):
+            queue = collections.deque()
+            queue.append(tree)
+            l = []
+            while queue:
+                temp = queue.popleft()
+                l.append(temp.val)
+                if temp.left:
+                    queue.append(temp.left)
+                if temp.right:
+                    queue.append(temp.right)
+            return l
+        if root:
+            return bfs(root)
+        else:
+            return []
+执行用时：20 ms, 在所有 Python 提交中击败了60.26%的用户
+内存消耗：13.4 MB, 在所有 Python 提交中击败了31.63%的用户
+通过测试用例：34 / 34
+# 慢了一点，是因为前面的写法一次就读取左右两个子节点数值的原因吗？
+```
+
+#### [剑指 Offer 32 - II. 从上到下打印二叉树 II](https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-ii-lcof/)
+
+维持两个队列，一个是当前层的节点，一个保留当前层的所有子节点，当遍历完当前层节点时，就将子节点队列赋予当前层节点队列，并清空子节点队列。
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def levelOrder(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[List[int]]
+        """
+        if not root:
+            return []
+        queue_1 = collections.deque()
+        queue_2 = collections.deque()
+        queue_1.append(root)
+        l = []
+        n = []
+        while queue_1:
+            temp = queue_1.popleft()
+            n.append(temp.val)
+            if temp.left:
+                queue_2.append(temp.left)
+            if temp.right:
+                queue_2.append(temp.right)
+            if not queue_1:
+                l.append(n)
+                n = []
+                if not queue_2:
+                    break
+                else:
+                    queue_1 = queue_2
+                    queue_2 = collections.deque()
+        return l
+执行用时：16 ms, 在所有 Python 提交中击败了90.06%的用户
+内存消耗：13.3 MB, 在所有 Python 提交中击败了63.61%的用户
+通过测试用例：34 / 34
+```
+
+一个队列
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def levelOrder(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[List[int]]
+        """
+        if not root:
+            return []
+        queue = collections.deque()
+        queue.append(root)
+        l = []
+        while queue:
+            temp = []
+            for _ in range(len(queue)):
+                node = queue.popleft()
+                temp.append(node.val)
+                if node.left:
+                    queue.append(node.left)
+                if node.right:
+                    queue.append(node.right)
+            l.append(temp)
+        return l
+执行用时：20 ms, 在所有 Python 提交中击败了65.60%的用户
+内存消耗：13.4 MB, 在所有 Python 提交中击败了47.71%的用户
+通过测试用例：34 / 34
+```
+
+#### [剑指 Offer 32 - III. 从上到下打印二叉树 III](https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-iii-lcof/)
+
+类似上一题，只是多加一个指示符号，判断需不需要将当前层的输出反转。
+
+```Python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def levelOrder(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[List[int]]
+        """
+        if not root:
+            return []
+        queue = collections.deque()
+        queue.append(root)
+        f = True
+        l = []
+        while queue:
+            temp = []
+            for _ in range(len(queue)):
+                node = queue.popleft()
+                temp.append(node.val)
+                if node.left:
+                    queue.append(node.left)
+                if node.right:
+                    queue.append(node.right)
+            if f:
+                l.append(temp)
+                f = not f
+            else:
+                l.append(temp[::-1])
+                f = not f
+        return l
+执行用时：20 ms, 在所有 Python 提交中击败了62.59%的用户
+内存消耗：13.5 MB, 在所有 Python 提交中击败了38.60%的用户
+通过测试用例：34 / 34
+```
+
+为什么两个队列内存消耗更少？
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def levelOrder(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[List[int]]
+        """
+        if not root:
+            return []
+        queue_1 = collections.deque()
+        queue_2 = collections.deque()
+        queue_1.append(root)
+        l = []
+        n = []
+        f = True
+        while queue_1:
+            temp = queue_1.popleft()
+            n.append(temp.val)
+            if temp.left:
+                queue_2.append(temp.left)
+            if temp.right:
+                queue_2.append(temp.right)
+            if not queue_1:
+                if f:
+                    l.append(n)
+                    f = not f
+                else:
+                    l.append(n[::-1])
+                    f = not f
+                n = []
+                if not queue_2:
+                    break
+                else:
+                    queue_1 = queue_2
+                    queue_2 = collections.deque()
+        return l
+执行用时：20 ms, 在所有 Python 提交中击败了62.59%的用户
+内存消耗：13.3 MB, 在所有 Python 提交中击败了72.28%的用户
+通过测试用例：34 / 34
+```
+
