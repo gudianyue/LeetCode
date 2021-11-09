@@ -1256,3 +1256,289 @@ class Solution(object):
 通过测试用例：34 / 34
 ```
 
+#### [剑指 Offer 26. 树的子结构](https://leetcode-cn.com/problems/shu-de-zi-jie-gou-lcof/)
+
+链接：https://leetcode-cn.com/problems/shu-de-zi-jie-gou-lcof/solution/mian-shi-ti-26-shu-de-zi-jie-gou-xian-xu-bian-li-p/
+
+解题思路：
+若树B是树A 的子结构，则子结构的根节点可能为树 AA 的任意一个节点。因此，判断树 B 是否是树 A 的子结构，需完成以下两步工作：
+
+1. 先序遍历树 A 中的每个节点 n_A；（对应函数 isSubStructure(A, B)）
+2. 判断树 A 中 以 n_A为根节点的子树 是否包含树 B 。（对应函数 recur(A, B)）
+
+![Picture1.png](https://pic.leetcode-cn.com/27d9f65b79ae4982fb58835d468c2a23ec2ac399ba5f38138f49538537264d03-Picture1.png)
+
+算法流程：
+名词规定：树 A 的根节点记作 节点 A ，树 B 的根节点称为 节点 B 。
+
+recur(A, B) 函数：
+
+终止条件：
+
+1. 当节点 B 为空：说明树 B 已匹配完成（越过叶子节点），因此返回 true；
+2. 当节点 A 为空：说明已经越过树 A 叶子节点，即匹配失败，返回 false ；
+3. 当节点 A 和 B 的值不同：说明匹配失败，返回 false ；
+
+返回值：
+
+1. 判断 A 和 B 的左子节点是否相等，即 recur(A.left, B.left) ；
+2. 判断 A 和 B 的右子节点是否相等，即 recur(A.right, B.right) ；
+
+isSubStructure(A, B) 函数：
+
+特例处理： 当 树 A 为空 或 树 B 为空 时，直接返回 false ；
+返回值： 若树 B 是树 A 的子结构，则必满足以下三种情况之一，因此用或 || 连接；
+以 节点 A 为根节点的子树 包含树 B ，对应 recur(A, B)；
+树 B 是 树 A 左子树 的子结构，对应 isSubStructure(A.left, B)；
+树 B 是 树 A 右子树 的子结构，对应 isSubStructure(A.right, B)；
+以上 2. 3. 实质上是在对树 A 做 先序遍历 。
+
+```Python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def isSubStructure(self, A, B):
+        """
+        :type A: TreeNode
+        :type B: TreeNode
+        :rtype: bool
+        """
+        if not B or not A:
+            return False
+        def recur(A, B):
+            if not B:
+                return True
+            if not A or A.val != B.val:
+                return False
+            return recur(A.left, B.left) and recur(A.right, B.right)
+        return recur(A, B) or self.isSubStructure(A.left, B) or self.isSubStructure(A.right, B) 
+执行用时：96 ms, 在所有 Python 提交中击败了44.02%的用户
+内存消耗：22.2 MB, 在所有 Python 提交中击败了89.69%的用户
+通过测试用例：48 / 48
+```
+
+链接：https://leetcode-cn.com/problems/shu-de-zi-jie-gou-lcof/solution/shuang-di-gui-chao-917yi-ci-tong-guo-by-vkxuh/
+
+双递归，一个用以寻找当前A树中是否存在节点与B树头结点相同，遍历整个A树。另一个则在找到匹配的头结点后判断是不是整个B树都在A的某一子树里面。
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def isSubStructure(self, A, B):
+        """
+        :type A: TreeNode
+        :type B: TreeNode
+        :rtype: bool
+        """
+        if not B or not A:
+            return False
+        self.result = False
+        def search_node(node):
+            if not node:
+                return False
+            if node.val == B.val:
+                self.result = check(node, B)
+            if self.result:
+                return True
+            search_node(node.left)
+            search_node(node.right)
+        def check(n1, n2):
+            if not n2:
+                return True
+            if not n1:
+                return False
+            if n1.val == n2.val:
+                return check(n1.left, n2.left) and check(n1.right, n2.right)
+            return False
+        search_node(A)
+        return self.result
+执行用时：72 ms, 在所有 Python 提交中击败了92.24%的用户
+内存消耗：22.3 MB, 在所有 Python 提交中击败了63.87%的用户
+通过测试用例：48 / 48
+```
+
+#### [剑指 Offer 27. 二叉树的镜像](https://leetcode-cn.com/problems/er-cha-shu-de-jing-xiang-lcof/)
+
+递归，将树中的每一个节点都交换左右节点，按层次遍历。
+
+```Python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def mirrorTree(self, root):
+        """
+        :type root: TreeNode
+        :rtype: TreeNode
+        """
+        if not root:
+            return root
+        def mirror_node(node1, node2):
+            node2.val = node1.val
+            if node1.left:
+                node2.right = TreeNode(None)
+                mirror_node(node1.left, node2.right)
+            if node1.right:
+                node2.left = TreeNode(None)
+                mirror_node(node1.right, node2.left)
+        out = TreeNode(None)
+        mirror_node(root, out)
+        return out
+执行用时：16 ms, 在所有 Python 提交中击败了67.54%的用户
+内存消耗：13.2 MB, 在所有 Python 提交中击败了14.03%的用户
+通过测试用例：68 / 68
+```
+
+链接：https://leetcode-cn.com/problems/er-cha-shu-de-jing-xiang-lcof/solution/er-cha-shu-de-jing-xiang-by-leetcode-sol-z44i/
+
+方法一：递归
+思路与算法
+
+这是一道很经典的二叉树问题。显然，我们从根节点开始，递归地对树进行遍历，并从叶子节点先开始翻转得到镜像。如果当前遍历到的节点 root 的左右两棵子树都已经翻转得到镜像，那么我们只需要交换两棵子树的位置，即可得到以root 为根节点的整棵子树的镜像。
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def mirrorTree(self, root):
+        """
+        :type root: TreeNode
+        :rtype: TreeNode
+        """
+        if not root:
+            return root
+        left = self.mirrorTree(root.left)
+        right = self.mirrorTree(root.right)
+        root.left, root.right = right, left
+        return root
+执行用时：12 ms, 在所有 Python 提交中击败了92.15%的用户
+内存消耗：13 MB, 在所有 Python 提交中击败了61.00%的用户
+通过测试用例：68 / 68
+```
+
+#### [剑指 Offer 28. 对称的二叉树](https://leetcode-cn.com/problems/dui-cheng-de-er-cha-shu-lcof/)
+
+链接：https://leetcode-cn.com/problems/dui-cheng-de-er-cha-shu-lcof/solution/mian-shi-ti-28-dui-cheng-de-er-cha-shu-di-gui-qing/
+
+解题思路：
+对称二叉树定义： 对于树中 任意两个对称节点 L 和 R ，一定有：
+L.val = R.val：即此两对称节点值相等。
+L.left.val = R.right.val ：即 L 的 左子节点 和 R 的 右子节点 对称；
+L.right.val = R.left.val：即 L 的 右子节点 和 R 的 左子节点 对称。
+根据以上规律，考虑从顶至底递归，判断每对节点是否对称，从而判断树是否为对称二叉树。
+
+![Picture1.png](https://pic.leetcode-cn.com/ebf894b723530a89cc9a1fe099f36c57c584d4987b080f625b33e228c0a02bec-Picture1.png)
+
+算法流程：
+isSymmetric(root) ：
+
+特例处理： 若根节点 root 为空，则直接返回 true。
+返回值： 即 recur(root.left, root.right) ;
+
+recur(L, R) ：
+
+终止条件：
+当 L 和 R 同时越过叶节点： 此树从顶至底的节点都对称，因此返回 true ；
+当 L 或 R 中只有一个越过叶节点： 此树不对称，因此返回 false ；
+当节点 L 值 != 节点 R 值： 此树不对称，因此返回 false ；
+递推工作：
+判断两节点 L.left和 R.right是否对称，即 recur(L.left, R.right) ；
+判断两节点 L.right 和 R.left是否对称，即 recur(L.right, R.left) ；
+返回值： 两对节点都对称时，才是对称树，因此用与逻辑符 && 连接。
+
+时间复杂度 O(N)： 其中 N 为二叉树的节点数量，每次执行 recur() 可以判断一对节点是否对称，因此最多调用 N/2次 recur() 方法。
+
+![Picture12.png](https://pic.leetcode-cn.com/88916808515487aac3ca24f9c55cbbdf6514f012eea04ec46cc2cc26acf9c4eb-Picture12.png)
+
+```
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def isSymmetric(self, root):
+        """
+        :type root: TreeNode
+        :rtype: bool
+        """
+        def recur(L, R):
+            if not L and not R:
+                return True
+            if not L or not R or L.val != R.val:
+                return False
+            return recur(L.left, R.right) and recur(L.right, R.left)
+        return recur(root.left, root.right) if root else True
+```
+
+队列实现
+
+链接：https://leetcode-cn.com/problems/dui-cheng-de-er-cha-shu-lcof/solution/dong-hua-yan-shi-duo-chong-shi-xian-mian-shi-ti-28/回想下递归的实现：
+当两个子树的根节点相等时，就比较:
+左子树的left 和 右子树的right，这个比较是用递归实现的。
+现在我们改用队列来实现，思路如下：
+首先从队列中拿出两个节点(left和right)比较
+将left的left节点和right的right节点放入队列
+将left的right节点和right的left节点放入队列
+时间复杂度是O(n)，空间复杂度是O(n)
+动画演示如下：
+![1.gif](https://pic.leetcode-cn.com/45a663b08efaa14193d63ef63ae3d1d130807467d13707f584906ad3af4adc36-1.gif)
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def isSymmetric(self, root):
+        """
+        :type root: TreeNode
+        :rtype: bool
+        """
+        if not root or not (root.left or root.right):
+            return True
+        queue = [root.left, root.right]
+        while queue:
+            left = queue.pop(0)
+            right = queue.pop(0)
+            if not (left or right):
+                continue
+            if not (left and right):
+                return False
+            if left.val != right.val:
+                return False
+            queue.append(left.left)
+            queue.append(right.right)
+            queue.append(left.right)
+            queue.append(right.left)
+        return True
+执行用时：24 ms, 在所有 Python 提交中击败了32.03%的用户
+内存消耗：13.2 MB, 在所有 Python 提交中击败了66.43%的用户
+通过测试用例：195 / 195
+```
+
