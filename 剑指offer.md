@@ -1542,3 +1542,168 @@ class Solution(object):
 通过测试用例：195 / 195
 ```
 
+#### [剑指 Offer 10- I. 斐波那契数列](https://leetcode-cn.com/problems/fei-bo-na-qi-shu-lie-lcof/)
+
+注意取模这个坑！
+
+```Python
+class Solution(object):
+    def fib(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        F0 = 0
+        F1 = 1
+        Fn = 0
+        if n == 0:
+            return F0
+        if n == 1:
+            return F1
+        for i in range(n-1):
+            Fn = int((F0 + F1) % (1e9 + 7)) 
+            F0 = F1
+            F1 = Fn
+        Fn = int(Fn % (1e9 + 7))
+        return Fn
+执行用时：16 ms, 在所有 Python 提交中击败了64.61%的用户
+内存消耗：13.1 MB, 在所有 Python 提交中击败了47.15%的用户
+通过测试用例：51 / 51
+```
+
+方法二：矩阵快速幂
+
+链接：https://leetcode-cn.com/problems/fei-bo-na-qi-shu-lie-lcof/solution/fei-bo-na-qi-shu-lie-by-leetcode-solutio-hbss/
+
+![image-20211110104719686](E:\MyGit\LeetCode\剑指offer.assets\image-20211110104719686.png)
+
+```Python
+class Solution(object):
+    def fib(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        mod = 10 ** 9 + 7
+        if n < 2:
+            return n
+        def mutiply(a, b):
+            c = [[0, 0], [0, 0]]
+            for i in range(2):
+                for j in range(2):
+                    c[i][j] = (a[i][0] * b[0][j] + a[i][1] * b[1][j]) % mod
+            return c
+        def matrix_pow(a, n):
+            ret = [[1, 0], [0, 1]] # 单位矩阵
+            while n > 0:
+                if n & 1:
+                    ret = mutiply(ret, a)
+                n >>= 1
+                a = mutiply(a, a)
+            return ret
+        res = matrix_pow([[1, 1], [1, 0]], n-1)
+        return res[0][0] #最后的结果是乘以[F(1), F(0)]即[1, 0]，F(n)取值就是res[0][0]*1 + res[0][1]*0 = res[0][0]
+执行用时：8 ms, 在所有 Python 提交中击败了99.13%的用户
+内存消耗：13 MB, 在所有 Python 提交中击败了70.49%的用户
+通过测试用例：51 / 51
+```
+
+#### [剑指 Offer 10- II. 青蛙跳台阶问题](https://leetcode-cn.com/problems/qing-wa-tiao-tai-jie-wen-ti-lcof/)
+
+链接：https://leetcode-cn.com/problems/qing-wa-tiao-tai-jie-wen-ti-lcof/solution/mian-shi-ti-10-ii-qing-wa-tiao-tai-jie-wen-ti-dong/
+
+![image-20211110111430551](E:\MyGit\LeetCode\剑指offer.assets\image-20211110111430551.png)
+
+```Python
+class Solution(object):
+    def numWays(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        mod = 10 ** 9 + 7
+        a, b = 1, 1
+        for i in range(n):
+            a, b = b, a + b
+        return a % mod
+执行用时：16 ms, 在所有 Python 提交中击败了66.79%的用户
+内存消耗：12.8 MB, 在所有 Python 提交中击败了99.81%的用户
+通过测试用例：51 / 51
+```
+
+类似上题，优化速度。
+
+```python 
+class Solution(object):
+    def numWays(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        mod = 10 ** 9 + 7
+        if n < 2:
+            return 1
+        def mutiplay(a, b):
+            c = [[0, 0], [0, 0]]
+            for i in range(2):
+                for j in range(2):
+                    c[i][j] = (a[i][0]*b[0][j] + a[i][1]*b[1][j])
+            return c
+        def matrix_pow(a, n):
+            ret = [[1, 0], [0, 1]]
+            while n > 0:
+                if n & 1:
+                    ret = mutiplay(ret, a)
+                n >>= 1
+                a = mutiplay(a, a)
+            return ret
+        res = matrix_pow([[1, 1], [1, 0]], n-1)
+        return (res[0][0] + res[0][1]) % mod # 此时的初始条件是[1, 1]
+执行用时：12 ms, 在所有 Python 提交中击败了91.72%的用户
+内存消耗：13 MB, 在所有 Python 提交中击败了69.80%的用户
+通过测试用例：51 / 51
+```
+
+#### [剑指 Offer 63. 股票的最大利润](https://leetcode-cn.com/problems/gu-piao-de-zui-da-li-run-lcof/)
+
+链接：https://leetcode-cn.com/problems/gu-piao-de-zui-da-li-run-lcof/solution/mian-shi-ti-63-gu-piao-de-zui-da-li-run-dong-tai-2/
+
+```python
+class Solution(object):
+    def maxProfit(self, prices):
+        """
+        :type prices: List[int]
+        :rtype: int
+        """
+        cost, profit = float("+inf"), 0
+        for price in prices:
+            cost = min(cost, price)
+            profit = max(profit, price-cost)
+        return profit
+执行用时：20 ms, 在所有 Python 提交中击败了78.92%的用户
+内存消耗：13.5 MB, 在所有 Python 提交中击败了85.65%的用户
+通过测试用例：200 / 200
+```
+
+链接：https://leetcode-cn.com/problems/gu-piao-de-zui-da-li-run-lcof/solution/li-san-shi-yi-si-chong-fang-fa-qing-song-gy57/
+
+具体来说，我们先找到第一个能产生利润的组合（后一天比前一天大）。然后，如果往后的天数股票价格还是增大，则把第一个最小值（开始增大的前一天）不断往后移动并计算利润。如果遇到比当前最小值还小的，则即使后面有更大的值，计算利润也是和新的最小值计算，所以从新开始选择产生利润的组合。
+
+```python
+class Solution(object):
+    def maxProfit(self, prices):
+        """
+        :type prices: List[int]
+        :rtype: int
+        """
+        profit = 0
+        for i in range(1, len(prices)):
+            if prices[i] > prices[i-1]:
+                profit = max(profit, prices[i]-prices[i-1])
+                prices[i] = prices[i-1]
+        return profit
+执行用时：16 ms, 在所有 Python 提交中击败了94.17%的用户
+内存消耗：14.2 MB, 在所有 Python 提交中击败了20.03%的用户
+通过测试用例：200 / 200
+```
+
