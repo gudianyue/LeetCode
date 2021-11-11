@@ -1707,3 +1707,77 @@ class Solution(object):
 通过测试用例：200 / 200
 ```
 
+#### [剑指 Offer 42. 连续子数组的最大和](https://leetcode-cn.com/problems/lian-xu-zi-shu-zu-de-zui-da-he-lcof/)
+
+动态规划，假设前i-1个数字最大连续子序列的加和是小于0的，那么低i个数字的最大子序列直接取当前数字。可以在原数组上存储最大子序列的值以节省空间。
+
+```Python
+class Solution(object):
+    def maxSubArray(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        if len(nums) == 1:
+            return nums[0]
+        for i in range(1, len(nums)):
+            nums[i] += max(nums[i-1], 0)
+        return max(nums)
+执行用时：32 ms, 在所有 Python 提交中击败了92.91%的用户
+内存消耗：19.2 MB, 在所有 Python 提交中击败了42.62%的用户
+通过测试用例：202 / 202
+```
+
+#### [剑指 Offer 47. 礼物的最大价值](https://leetcode-cn.com/problems/li-wu-de-zui-da-jie-zhi-lcof/)
+
+链接：https://leetcode-cn.com/problems/li-wu-de-zui-da-jie-zhi-lcof/solution/mian-shi-ti-47-li-wu-de-zui-da-jie-zhi-dong-tai-gu/
+
+![image-20211111164136325](E:\MyGit\LeetCode\剑指offer.assets\image-20211111164136325.png)
+
+```python
+class Solution(object):
+    def maxValue(self, grid):
+        """
+        :type grid: List[List[int]]
+        :rtype: int
+        """
+        row, column = len(grid), len(grid[0])
+        for i in range(row):
+            for j in range(column):
+                if i == 0 and j == 0:
+                    continue
+                elif i == 0:
+                    grid[i][j] += grid[i][j-1]
+                elif j == 0:
+                    grid[i][j] += grid[i-1][j]
+                else:
+                    grid[i][j] += max(grid[i-1][j], grid[i][j-1])
+        return grid[-1][-1]
+执行用时：24 ms, 在所有 Python 提交中击败了83.11%的用户内存消耗：
+14.3 MB, 在所有 Python 提交中击败了73.25%的用户
+通过测试用例：61 / 61
+```
+
+以上代码逻辑清晰，和转移方程直接对应，但仍可提升效率：当 gridgrid 矩阵很大时， i = 0i=0 或 j = 0j=0 的情况仅占极少数，相当循环每轮都冗余了一次判断。因此，可先初始化矩阵第一行和第一列，再开始遍历递推。
+
+```python
+class Solution(object):
+    def maxValue(self, grid):
+        """
+        :type grid: List[List[int]]
+        :rtype: int
+        """
+        row, column = len(grid), len(grid[0])
+        for i in range(1, row):
+            grid[i][0] += grid[i-1][0]
+        for j in range(1, column):
+            grid[0][j] += grid[0][j-1]
+        for i in range(1, row):
+            for j in range(1, column):
+                grid[i][j] += max(grid[i-1][j], grid[i][j-1])
+        return grid[-1][-1]
+执行用时：16 ms, 在所有 Python 提交中击败了99.50%的用户
+内存消耗：14.6 MB, 在所有 Python 提交中击败了31.44%的用户
+通过测试用例：61 / 61
+```
+
