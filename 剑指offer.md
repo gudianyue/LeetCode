@@ -1781,3 +1781,115 @@ class Solution(object):
 通过测试用例：61 / 61
 ```
 
+#### [剑指 Offer 46. 把数字翻译成字符串](https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/)
+
+链接：https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/solution/mian-shi-ti-46-ba-shu-zi-fan-yi-cheng-zi-fu-chua-6/
+
+![Picture1.png](https://pic.leetcode-cn.com/e231fde16304948251633cfc65d04396f117239ea2d13896b1d2678de9067b42-Picture1.png)
+
+```python
+class Solution(object):
+    def translateNum(self, num):
+        """
+        :type num: int
+        :rtype: int
+        """
+        s = str(num)
+        a = b = 1
+        for i in range(2, len(s)+1):
+            a, b = (a+b if "10" <= s[i-2:i] <= "25" else a), a
+        return a
+执行用时：24 ms, 在所有 Python 提交中击败了27.83%的用户
+内存消耗：13.1 MB, 在所有 Python 提交中击败了43.53%的用户
+通过测试用例：49 / 49
+```
+
+取余
+
+```python
+class Solution(object):
+    def translateNum(self, num):
+        """
+        :type num: int
+        :rtype: int
+        """
+        a = b = 1
+        y = num % 10
+        while num != 0:
+            num //= 10
+            x = num % 10
+            a, b = (a+b if 10 <= 10*x+y <= 25 else a), a
+            y = x
+        return a
+执行用时：12 ms, 在所有 Python 提交中击败了88.83%的用户
+内存消耗：13.2 MB, 在所有 Python 提交中击败了5.02%的用户
+通过测试用例：49 / 49
+```
+
+优化，直接取余100，再考虑能不能组合
+
+```python
+class Solution(object):
+    def translateNum(self, num):
+        """
+        :type num: int
+        :rtype: int
+        """
+        a = b = 1
+        while num > 9:
+            x = num % 100
+            a, b = (a+b if 10 <= x <= 25 else a), a
+            num //= 10
+        return a
+执行用时：12 ms, 在所有 Python 提交中击败了88.83%的用户
+内存消耗：13 MB, 在所有 Python 提交中击败了63.11%的用户
+通过测试用例：49 / 49
+```
+
+#### [剑指 Offer 48. 最长不含重复字符的子字符串](https://leetcode-cn.com/problems/zui-chang-bu-han-zhong-fu-zi-fu-de-zi-zi-fu-chuan-lcof/)
+
+链接：https://leetcode-cn.com/problems/zui-chang-bu-han-zhong-fu-zi-fu-de-zi-zi-fu-chuan-lcof/solution/mian-shi-ti-48-zui-chang-bu-han-zhong-fu-zi-fu-d-9/
+
+![Picture1.png](https://pic.leetcode-cn.com/c576757494724070d0c40cd192352ef9f48c42e14af09a1333972b9d843624a3-Picture1.png)
+
+```python
+class Solution(object):
+    def lengthOfLongestSubstring(self, s):
+        """
+        :type s: str
+        :rtype: int
+        """
+        hash_map = {}
+        res = temp = 0
+        for j in range(len(s)):
+            i = hash_map.get(s[j], -1)
+            hash_map[s[j]] = j
+            temp = temp + 1 if temp < j-i else j-i
+            res = max(res, temp)
+        return res
+执行用时：36 ms, 在所有 Python 提交中击败了93.12%的用户
+内存消耗：13.8 MB, 在所有 Python 提交中击败了58.07%的用户
+通过测试用例：987 / 987
+```
+
+双指针
+
+```python
+class Solution(object):
+    def lengthOfLongestSubstring(self, s):
+        """
+        :type s: str
+        :rtype: int
+        """
+        hash_map, res, i = {}, 0, -1
+        for j in range(len(s)):
+            if s[j] in hash_map:
+                i = max(hash_map[s[j]], i)
+            hash_map[s[j]] = j
+            res = max(res, j-i)
+        return res
+执行用时：36 ms, 在所有 Python 提交中击败了93.12%的用户
+内存消耗：14 MB, 在所有 Python 提交中击败了40.47%的用户
+通过测试用例：987 / 987
+```
+
