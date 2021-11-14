@@ -1893,3 +1893,208 @@ class Solution(object):
 通过测试用例：987 / 987
 ```
 
+#### [剑指 Offer 18. 删除链表的节点](https://leetcode-cn.com/problems/shan-chu-lian-biao-de-jie-dian-lcof/)
+
+新建一个指针，利用指针滑动寻找节点，首先先判断头结点是不是。
+
+```python
+# Definition for singly-linked list.
+# class ListNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+class Solution(object):
+    def deleteNode(self, head, val):
+        """
+        :type head: ListNode
+        :type val: int
+        :rtype: ListNode
+        """
+        p = head
+        if p.val == val:
+            head = head.next
+            return head
+        while p.next:
+            if p.next.val == val:
+                p.next = p.next.next
+                break
+            else:
+                p = p.next 
+        return head
+执行用时：16 ms, 在所有 Python 提交中击败了97.68%的用户
+内存消耗：13.2 MB, 在所有 Python 提交中击败了96.86%的用户
+通过测试用例：37 / 37
+```
+
+#### [剑指 Offer 22. 链表中倒数第k个节点](https://leetcode-cn.com/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/)
+
+利用哈希表存储节点-节点位置键值对，并记录链表长度，最后将链表总长度+1-k即是输出头结点在原链表中的位置，在哈希表中找到记录输出即可。
+
+```Python
+# Definition for singly-linked list.
+# class ListNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution(object):
+    def getKthFromEnd(self, head, k):
+        """
+        :type head: ListNode
+        :type k: int
+        :rtype: ListNode
+        """
+        total = 0
+        hash_map = {}
+        while head:
+            total += 1
+            hash_map[total] = head
+            head = head.next
+        node = total + 1 - k 
+        return hash_map[node]
+执行用时：16 ms, 在所有 Python 提交中击败了87.36%的用户
+内存消耗：13.1 MB, 在所有 Python 提交中击败了48.58%的用户
+通过测试用例：208 / 208
+```
+
+快慢指针，先让快指针走k个节点，这样快慢指针之间就相隔k个节点了。快慢指针一起遍历链表时，当快指针刚好遍历完整个链表，慢指针刚好位于倒数第k个节点位置。
+
+```python
+# Definition for singly-linked list.
+# class ListNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution(object):
+    def getKthFromEnd(self, head, k):
+        """
+        :type head: ListNode
+        :type k: int
+        :rtype: ListNode
+        """
+        fast, slow = head, head
+        while fast and k > 0:
+            fast, k = fast.next, k-1
+        while fast:
+            fast, slow = fast.next, slow.next
+        return slow
+执行用时：16 ms, 在所有 Python 提交中击败了87.36%的用户
+内存消耗：12.9 MB, 在所有 Python 提交中击败了92.08%的用户
+通过测试用例：208 / 208
+```
+
+#### [剑指 Offer 25. 合并两个排序的链表](https://leetcode-cn.com/problems/he-bing-liang-ge-pai-xu-de-lian-biao-lcof/)
+
+新建两个指针，一个用于连接输出链表头结点（连接l1、l2之间第一个最小的节点），一个用于遍历l1、l2链表时不断向后遍历输出链表。
+
+```python
+执行用时：
+32 ms
+, 在所有 Python 提交中击败了
+90.58%
+的用户
+内存消耗：
+14.3 MB
+, 在所有 Python 提交中击败了
+71.75%
+的用户
+通过测试用例：
+218 / 218# Definition for singly-linked list.
+# class ListNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution(object):
+    def mergeTwoLists(self, l1, l2):
+        """
+        :type l1: ListNode
+        :type l2: ListNode
+        :rtype: ListNode
+        """ 
+        head = cur = ListNode(None)
+        while l1 and l2:
+            if l1.val <= l2.val:
+                cur.next = l1
+                l1 = l1.next
+            else:
+                cur.next = l2
+                l2 = l2.next
+            cur = cur.next
+        if l1:
+            cur.next = l1
+        else:
+            cur.next = l2
+        return head.next
+执行用时：32 ms, 在所有 Python 提交中击败了90.58%的用户
+内存消耗：14.3 MB, 在所有 Python 提交中击败了71.75%的用户
+通过测试用例：218 / 218
+```
+
+#### [剑指 Offer 52. 两个链表的第一个公共节点](https://leetcode-cn.com/problems/liang-ge-lian-biao-de-di-yi-ge-gong-gong-jie-dian-lcof/)
+
+暴力破解：建立一个列表保存AB链表中遍历过的节点，每次AB都移动一个节点，当有节点重复出现了，就是第一个相交的节点。
+
+```Python
+# Definition for singly-linked list.
+# class ListNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution(object):
+    def getIntersectionNode(self, headA, headB):
+        """
+        :type head1, head1: ListNode
+        :rtype: ListNode
+        """
+        node_list = []
+        while headA or headB:
+            if headA:
+                if headA in node_list:
+                    return headA
+                else:
+                    node_list.append(headA)
+                    headA = headA.next
+            if headB:
+                if headB in node_list:
+                    return headB
+                else:
+                    node_list.append(headB)
+                    headB = headB.next
+        return None
+执行用时：7132 ms, 在所有 Python 提交中击败了5.98%的用户
+内存消耗：42.3 MB, 在所有 Python 提交中击败了42.52%的用户
+通过测试用例：45 / 45
+```
+
+双指针：https://leetcode-cn.com/problems/liang-ge-lian-biao-de-di-yi-ge-gong-gong-jie-dian-lcof/solution/shuang-zhi-zhen-fa-lang-man-xiang-yu-by-ml-zimingm/
+
+我们使用两个指针 node1，node2 分别指向两个链表 headA，headB 的头结点，然后同时分别逐结点遍历，当 node1 到达链表 headA 的末尾时，重新定位到链表 headB 的头结点；当 node2 到达链表 headB 的末尾时，重新定位到链表 headA 的头结点。
+
+这样，当它们相遇时，所指向的结点就是第一个公共结点。
+
+```Python
+# Definition for singly-linked list.
+# class ListNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution(object):
+    def getIntersectionNode(self, headA, headB):
+        """
+        :type head1, head1: ListNode
+        :rtype: ListNode
+        """
+        node1, node2 = headA, headB
+        while node1 != node2:
+            node1 = node1.next if node1 else headB
+            node2 = node2.next if node2 else headA
+        return node2
+执行用时：140 ms, 在所有 Python 提交中击败了90.20%的用户
+内存消耗：42.1 MB, 在所有 Python 提交中击败了87.71%的用户
+通过测试用例：45 / 45
+```
+
