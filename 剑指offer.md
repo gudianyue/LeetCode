@@ -2098,3 +2098,176 @@ class Solution(object):
 通过测试用例：45 / 45
 ```
 
+#### [剑指 Offer 21. 调整数组顺序使奇数位于偶数前面](https://leetcode-cn.com/problems/diao-zheng-shu-zu-shun-xu-shi-qi-shu-wei-yu-ou-shu-qian-mian-lcof/)
+
+解法：双指针，第一个指针遍历所有数组元素，第二个指针只有在第一个指针遍历到奇数时才和第一个指针交换数组元素并向前移动一位。停止条件为第一个指针遍历完所有数组元素。
+
+```Python
+class Solution(object):
+    def exchange(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: List[int]
+        """
+        start, cur = 0, 0
+        while cur < len(nums):
+            if nums[cur] % 2 == 0:
+                cur += 1
+            else:
+                nums[start], nums[cur] = nums[cur], nums[start]
+                start += 1
+                cur += 1
+        return nums
+执行用时：32 ms, 在所有 Python 提交中击败了66.46%的用户
+内存消耗：18.4 MB, 在所有 Python 提交中击败了39.78%的用户
+通过测试用例：17 / 17
+```
+
+解题思路：
+考虑定义双指针 ii , jj 分列数组左右两端，循环执行：
+
+指针 ii 从左向右寻找偶数；
+指针 jj 从右向左寻找奇数；
+将 偶数 nums[i]nums[i] 和 奇数 nums[j]nums[j] 交换。
+可始终保证： 指针 ii 左边都是奇数，指针 jj 右边都是偶数 。
+链接：https://leetcode-cn.com/problems/diao-zheng-shu-zu-shun-xu-shi-qi-shu-wei-yu-ou-shu-qian-mian-lcof/solution/mian-shi-ti-21-diao-zheng-shu-zu-shun-xu-shi-qi-4/
+
+```Python
+class Solution(object):
+    def exchange(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: List[int]
+        """
+        i, j = 0, len(nums)-1
+        while i < j:
+            while i<j and nums[i]%2 == 1:
+                i += 1
+            while i<j and nums[j]%2 == 0:
+                j -= 1
+            nums[i], nums[j] = nums[j], nums[i]
+        return nums
+执行用时：32 ms, 在所有 Python 提交中击败了66.46%的用户
+内存消耗：18.2 MB, 在所有 Python 提交中击败了81.03%的用户
+通过测试用例：17 / 17
+```
+
+#### [剑指 Offer 57. 和为s的两个数字](https://leetcode-cn.com/problems/he-wei-sde-liang-ge-shu-zi-lcof/)
+
+算法流程：
+初始化： 双指针 i , jj分别指向数组 nums 的左右两端 （俗称对撞双指针）。
+循环搜索： 当双指针相遇时跳出；
+计算和 s = nums[i] + nums[j]；
+若 s > target ，则指针j向左移动，即执行 j = j - 1 ；
+若 s < target ，则指针i向右移动，即执行 i = i + 1；
+若 s = target ，立即返回数组 \[nums[i], nums\[j]]；
+返回空数组，代表无和为 target 的数字组合。
+链接：https://leetcode-cn.com/problems/he-wei-sde-liang-ge-shu-zi-lcof/solution/mian-shi-ti-57-he-wei-s-de-liang-ge-shu-zi-shuang-/
+
+```python
+class Solution(object):
+    def twoSum(self, nums, target):
+        """
+        :type nums: List[int]
+        :type target: int
+        :rtype: List[int]
+        """
+        start, end = 0, len(nums)-1
+        while start < end:
+            if nums[start] + nums[end] == target:
+                return [nums[start], nums[end]]
+            elif nums[start] + nums[end] < target:
+                start += 1
+            else:
+                end -= 1
+        return None
+执行用时：88 ms, 在所有 Python 提交中击败了38.93%的用户
+内存消耗：21.5 MB, 在所有 Python 提交中击败了74.15%的用户
+通过测试用例：36 / 36
+```
+
+思路：二分法可加快范围的缩小（超过100%）
+时间复杂度： O(lgN) ~ O(N)
+空间复杂度： O(1)
+
+算法流程：
+
+1. 初始化： 双指针i,j分别指向数组 nums的两端, split_index = (j + i) >> 1；
+2. 循环搜索： 当双指针相遇(i >= j - 1)或找到答案时跳出；
+3. 比较nums[j] + nums[i]与target；
+   1. c. 当 nums[j] + nums[i] > target时，此时可根据nums[i] + nums[split_index]的结果判断是否要加速缩进
+      * 当nums[i] + nums[split_index] > target，可知num[i]加上范围(split_index, j)内的任何一个元素均大于target，此时可加速缩进，令j = split_index - 1，split_index = (j + i) >> 1
+      * 当nums[i] + nums[split_index] < target，无法加速缩进，令j -= 1, 易知潜在的右边数字在范围(split_index, j)内，令split_index = (j + split_index) >> 1
+      * 当nums[i] + nums[split_index] = target，立即返回数组 [nums[i], nums[split_index]]
+   2. 当 nums[j] + nums[i] < target时，此时可根据nums[split_index] + nums[j]的结果判断是否要加速缩进
+      * 当nums[split_index] + nums[j] < target，可知num[j]加上范围(i, split_index)内的任何一个元素均小于target，可加速缩进，令i = split_index + 1，split_index = (j + i) >> 1
+      * 当nums[split_index] + nums[j] > target，无法加速缩进，令i += 1, 易知潜在的左边数字在范围(i, split_index)内，令split_index = (split_index + i) >> 1
+      * 当nums[split_index] + nums[j] = target，立即返回数组 [nums[split_index], nums[j]]
+   3. 当 nums[j] + nums[i] = target时，立即返回数组 [nums[i], nums[j]]
+4. 循环中没找到正确答案时，且最终i = j - 1 和 nums[j] + nums[i] = target时，返回数组 [nums[i], nums[j]]，否则返回[]
+
+链接：https://leetcode-cn.com/problems/he-wei-sde-liang-ge-shu-zi-lcof/solution/shuang-zhi-zhen-gai-jin-ban-er-fen-fa-by-harrislia/
+
+```python
+class Solution(object):
+    def twoSum(self, nums, target):
+        """
+        :type nums: List[int]
+        :type target: int
+        :rtype: List[int]
+        """
+        start, end = 0, len(nums)-1
+        mid = (start + end) // 2
+        while start < end:
+            if nums[start] + nums[end] == target:
+                return [nums[start], nums[end]]
+            elif nums[start] + nums[end] < target:
+                if nums[end] + nums[mid] < target:
+                    start = mid + 1
+                    mid = (start + end) // 2
+                else:
+                    start += 1
+            else:
+                if nums[start] + nums[mid] > target:
+                    end = mid - 1
+                    mid = (start + end) // 2
+                else:
+                    end -= 1
+        return []
+执行用时：72 ms, 在所有 Python 提交中击败了90.31%的用户
+内存消耗：21.5 MB, 在所有 Python 提交中击败了81.26%的用户
+通过测试用例：36 / 36
+```
+
+#### [剑指 Offer 58 - I. 翻转单词顺序](https://leetcode-cn.com/problems/fan-zhuan-dan-ci-shun-xu-lcof/)
+
+算法解析：
+倒序遍历字符串s ，记录单词左右索引边界 i , j ；
+每确定一个单词的边界，则将其添加至单词列表 res；
+最终，将单词列表拼接为字符串，并返回即可。
+复杂度分析：
+时间复杂度 O(N ： 其中 N 为字符串 s 的长度，线性遍历字符串。
+空间复杂度 O(N)： 新建的 list(Python) 或 StringBuilder(Java) 中的字符串总长度 ≤N ，占用 O(N)大小的额外空间。
+链接：https://leetcode-cn.com/problems/fan-zhuan-dan-ci-shun-xu-lcof/solution/mian-shi-ti-58-i-fan-zhuan-dan-ci-shun-xu-shuang-z/
+
+```python 
+class Solution(object):
+    def reverseWords(self, s):
+        """
+        :type s: str
+        :rtype: str
+        """
+        s = s.strip() 
+        i = j = len(s) - 1
+        res = []
+        while i >= 0:
+            while i >= 0 and s[i] != ' ': i -= 1 
+            res.append(s[i + 1: j + 1]) 
+            while s[i] == ' ': i -= 1
+            j = i
+        return ' '.join(res) 
+执行用时：12 ms, 在所有 Python 提交中击败了95.72%的用户
+内存消耗：13.9 MB, 在所有 Python 提交中击败了89.79%的用户
+通过测试用例：25 / 25
+```
+
