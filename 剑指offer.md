@@ -2271,3 +2271,210 @@ class Solution(object):
 通过测试用例：25 / 25
 ```
 
+#### [剑指 Offer 12. 矩阵中的路径](https://leetcode-cn.com/problems/ju-zhen-zhong-de-lu-jing-lcof/)
+
+解题思路：
+本问题是典型的矩阵搜索问题，可使用 深度优先搜索（DFS）+ 剪枝 解决。
+
+* 深度优先搜索： 可以理解为暴力法遍历矩阵中所有字符串可能性。DFS 通过递归，先朝一个方向搜到底，再回溯至上个节点，沿另一个方向搜索，以此类推。
+* 剪枝： 在搜索中，遇到 这条路不可能和目标字符串匹配成功 的情况（例如：此矩阵元素和目标字符不同、此元素已被访问），则应立即返回，称之为 可行性剪枝 。
+
+![Picture0.png](https://pic.leetcode-cn.com/1604944042-glmqJO-Picture0.png)
+
+DFS 解析：
+
+* 递归参数： 当前元素在矩阵 board 中的行列索引 i 和 j ，当前目标字符在 word 中的索引 k 。
+* 终止条件：
+  1. 返回 falsefalse ： (1) 行或列索引越界 或 (2) 当前矩阵元素与目标字符不同 或 (3) 当前矩阵元素已访问过 （ (3) 可合并至 (2) ） 。
+  2. 返回 truetrue ： k = len(word) - 1 ，即字符串 word 已全部匹配。
+* 递推工作：
+  1. 标记当前矩阵元素： 将 board[i][j] 修改为 空字符 '' ，代表此元素已访问过，防止之后搜索时重复访问。
+  2. 搜索下一单元格： 朝当前元素的 上、下、左、右 四个方向开启下层递归，使用 或 连接 （代表只需找到一条可行路径就直接返回，不再做后续 DFS ），并记录结果至 res 。
+  3. 还原当前矩阵元素： 将 board[i][j] 元素还原至初始值，即 word[k] 。
+* 返回值： 返回布尔量 res ，代表是否搜索到目标字符串。
+* 使用空字符（Python: '' , Java/C++: '\0' ）做标记是为了防止标记字符与矩阵原有字符重复。当存在重复时，此算法会将矩阵原有字符认作标记字符，从而出现错误。
+
+复杂度分析：
+M, N分别为矩阵行列大小， K为字符串 word 长度。
+
+时间复杂度 O($3^K$MN)： 最差情况下，需要遍历矩阵中长度为 K 字符串的所有方案，时间复杂度为 O($3^K$)；矩阵中共有 MN 个起点，时间复杂度为 O(MN)。
+方案数计算： 设字符串长度为 K ，搜索中每个字符有上、下、左、右四个方向可以选择，舍弃回头（上个字符）的方向，剩下 3 种选择，因此方案数的复杂度为 O($3^K$)。
+空间复杂度 O(K) ： 搜索过程中的递归深度不超过 K ，因此系统因函数调用累计使用的栈空间占用 O(K)（因为函数返回后，系统调用的栈空间会释放）。最坏情况下 K = MN，递归深度为 MN，此时系统栈使用 O(MN)的额外空间。
+
+链接：https://leetcode-cn.com/problems/ju-zhen-zhong-de-lu-jing-lcof/solution/mian-shi-ti-12-ju-zhen-zhong-de-lu-jing-shen-du-yo/
+
+
+```python 
+class Solution(object):
+    def exist(self, board, word):
+        """
+        :type board: List[List[str]]
+        :type word: str
+        :rtype: bool
+        """
+        def dfs(i, j, k):
+            if not 0 <= i <len(board) or not 0 <= j < len(board[0]) or board[i][j] != word[k]:
+                return False
+            if k == len(word)-1:
+                return True
+            board[i][j] = ''
+            res = dfs(i+1, j, k+1) or dfs(i-1, j, k+1) or dfs(i, j+1, k+1) or dfs(i, j-1, k+1)
+            board[i][j] = word[k]
+            return res
+        for i in range(len(board)):
+            for j in range(len(board[0])):
+                if dfs(i, j, 0):
+                    return True
+        return False
+执行用时：164 ms, 在所有 Python 提交中击败了41.76%的用户
+内存消耗：16.4 MB, 在所有 Python 提交中击败了16.48%的用户
+通过测试用例：87 / 87
+```
+
+思路
+回溯其实就是纯暴力枚举，把所有情况列举下，如果列举到一半发现已经不符合要求了及时剪枝，并且把之前做出的选择撤销，比如本题如果列举的一条路径不符合要求，把之前访问过的位置全部改回原来的值。
+
+步骤如下：
+
+1. 首先，要在矩阵中找字符串中的第一个字符，找到后进入递归
+2. 对于已访问的位置，修改其值为'/'，访问完毕后要将值改回来，这是回溯的核心
+3. 查找当前字符的周围字符，如果周围字符没有被访问过且与字符串的下一个字符相等，再次进入递归
+4. 当索引index已经等于字符串长度时，说明已经找到了一条路径，返回True
+5. 只要找到一条路径就返回true：if dfs返回True： 返回True
+
+
+链接：https://leetcode-cn.com/problems/ju-zhen-zhong-de-lu-jing-lcof/solution/jian-zhi-offer-12-ju-zhen-zhong-de-lu-ji-u3mw/
+
+```python
+class Solution(object):
+    def exist(self, board, word):
+        """
+        :type board: List[List[str]]
+        :type word: str
+        :rtype: bool
+        """
+        row, col = len(board), len(board[0])
+        w = len(word)
+        def dfs(x, y, k):
+            if k == w:
+                return True
+            for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < row and 0 <= ny < col and board[nx][ny] == word[k]:
+                    board[nx][ny] = ''
+                    if dfs(nx, ny, k+1):
+                        return True
+                    board[nx][ny] = word[k]
+            return False
+        for i in range(row):
+            for j in range(col):
+                if board[i][j] == word[0]:
+                    board[i][j] = ''
+                    if dfs(i, j, 1):
+                        return True
+                    board[i][j] = word[0]
+        return False
+执行用时：120 ms, 在所有 Python 提交中击败了96.84%的用户
+内存消耗：15.7 MB, 在所有 Python 提交中击败了73.62%的用户
+通过测试用例：87 / 87
+```
+
+#### [剑指 Offer 13. 机器人的运动范围](https://leetcode-cn.com/problems/ji-qi-ren-de-yun-dong-fan-wei-lcof/)
+
+方法一：广度优先搜索
+思路和算法
+
+我们将行坐标和列坐标数位之和大于 k 的格子看作障碍物，那么这道题就是一道很传统的搜索题目，我们可以使用广度优先搜索或者深度优先搜索来解决它，本文选择使用广度优先搜索的方法来讲解。
+
+那么如何计算一个数的数位之和呢？我们只需要对数 x 每次对 10 取余，就能知道数 x 的个位数是多少，然后再将 x 除 10，这个操作等价于将 x 的十进制数向右移一位，删除个位数（类似于二进制中的 >> 右移运算符），不断重复直到 x 为 0 时结束。
+
+同时这道题还有一个隐藏的优化：我们在搜索的过程中搜索方向可以缩减为向右和向下，而不必再向上和向左进行搜索。如下图，我们展示了 16 * 16 的地图随着限制条件 k 的放大，可行方格的变化趋势，每个格子里的值为行坐标和列坐标的数位之和，蓝色方格代表非障碍方格，即其值小于等于当前的限制条件 k。我们可以发现随着限制条件 k 的增大，(0, 0) 所在的蓝色方格区域内新加入的非障碍方格都可以由上方或左方的格子移动一步得到。而其他不连通的蓝色方格区域会随着 k 的增大而连通，且连通的时候也是由上方或左方的格子移动一步得到，因此我们可以将我们的搜索方向缩减为向右或向下。
+
+![img](https://pic.leetcode-cn.com/858d08887e25e9f3503e28ad5b3d2e0fafdf8b69c0b534f8e222662acc8eb00e-%E5%B9%BB%E7%81%AF%E7%89%878.JPG)
+
+复杂度分析
+
+时间复杂度：O(mn)，其中 m 为方格的行数，n 为方格的列数。考虑所有格子都能进入，那么搜索的时候一个格子最多会被访问的次数为常数，所以时间复杂度为 O(2mn)=O(mn)。
+
+空间复杂度：O(mn)，其中 m 为方格的行数，n 为方格的列数。搜索的时候需要一个大小为 O(mn) 的标记结构用来标记每个格子是否被走过。
+链接：https://leetcode-cn.com/problems/ji-qi-ren-de-yun-dong-fan-wei-lcof/solution/ji-qi-ren-de-yun-dong-fan-wei-by-leetcode-solution/
+
+```python
+class Solution(object):
+    def movingCount(self, m, n, k):
+        """
+        :type m: int
+        :type n: int
+        :type k: int
+        :rtype: int
+        """
+        def digitsum(n):
+            ans = 0
+            while n:
+                ans += n % 10
+                n //= 10
+            return ans
+        q = collections.deque()
+        q.append((0, 0))
+        s = set()
+        while q:
+            x, y = q.popleft()
+            if (x, y) not in s and 0 <= x < m and 0 <= y < n and digitsum(x) + digitsum(y) <= k:
+                s.add((x, y))
+                for nx, ny in ((x+1, y), (x, y+1)):
+                    q.append((nx, ny))
+        return len(s)
+执行用时：28 ms, 在所有 Python 提交中击败了78.25%的用户
+内存消耗：13.4 MB, 在所有 Python 提交中击败了77.56%的用户
+通过测试用例：49 / 49
+```
+
+方法二：递推
+思路
+
+考虑到方法一提到搜索的方向只需要朝下或朝右，我们可以得出一种递推的求解方法。
+
+算法
+
+定义 vis\[i]\[j] 为 (i, j) 坐标是否可达，如果可达返回 1，否则返回 0。
+
+首先 (i, j) 本身需要可以进入，因此需要先判断 i 和 j 的数位之和是否大于 k ，如果大于的话直接设置 vis\[i]\[j] 为不可达即可。
+
+否则，前面提到搜索方向只需朝下或朝右，因此 (i, j) 的格子只会从 (i - 1, j) 或者 (i, j - 1) 两个格子走过来（不考虑边界条件），那么 vis\[i]\[j] 是否可达的状态则可由如下公式计算得到：
+
+$$
+\textit{vis}[i][j]=\textit{vis}[i-1][j]\ \textrm{or}\ \textit{vis}[i][j-1]
+$$
+即只要有一个格子可达，那么 (i, j) 这个格子就是可达的，因此我们只要遍历所有格子，递推计算出它们是否可达然后用变量 ans 记录可达的格子数量即可。
+
+初始条件 vis\[i]\[j] = 1 ，递推计算的过程中注意边界的处理。
+链接：https://leetcode-cn.com/problems/ji-qi-ren-de-yun-dong-fan-wei-lcof/solution/ji-qi-ren-de-yun-dong-fan-wei-by-leetcode-solution/
+
+```python
+class Solution(object):
+    def movingCount(self, m, n, k):
+        """
+        :type m: int
+        :type n: int
+        :type k: int
+        :rtype: int
+        """
+        def digitsum(n):
+            ans = 0
+            while n:
+                ans += n % 10
+                n //= 10
+            return ans
+        vis = set()
+        vis.add((0, 0))
+        for i in range(m):
+            for j in range(n):
+                if ((i-1, j) in vis or (i, j-1) in vis) and digitsum(i) + digitsum(j) <= k:
+                    vis.add((i, j))
+        return len(vis)
+执行用时：24 ms, 在所有 Python 提交中击败了91.52%的用户
+内存消耗：13.6 MB, 在所有 Python 提交中击败了49.52%的用户
+通过测试用例：49 / 49
+```
+
+
