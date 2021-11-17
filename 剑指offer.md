@@ -2477,4 +2477,354 @@ class Solution(object):
 通过测试用例：49 / 49
 ```
 
+#### [剑指 Offer 34. 二叉树中和为某一值的路径](https://leetcode-cn.com/problems/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof/)
+
+方法一：深度优先搜索
+思路及算法
+
+我们可以采用深度优先搜索的方式，枚举每一条从根节点到叶子节点的路径。当我们遍历到叶子节点，且此时路径和恰为目标和时，我们就找到了一条满足条件的路径。
+
+复杂度分析
+
+时间复杂度：O($N^2$)，其中 N 是树的节点数。在最坏情况下，树的上半部分为链状，下半部分为完全二叉树，并且从根节点到每一个叶子节点的路径都符合题目要求。此时，路径的数目为 O(N)，并且每一条路径的节点个数也为 O(N)，因此要将这些路径全部添加进答案中，时间复杂度为 O($N^2$)。
+
+空间复杂度：O(N)，其中 N 是树的节点数。空间复杂度主要取决于栈空间的开销，栈中的元素个数不会超过树的节点数。
+
+链接：https://leetcode-cn.com/problems/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof/solution/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-68dg/
+
+```Python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution(object):
+    def pathSum(self, root, target):
+        """
+        :type root: TreeNode
+        :type target: int
+        :rtype: List[List[int]]
+        """
+        res = list()
+        path = list()
+        def dfs(root, target):
+            if not root:
+                return
+            path.append(root.val)
+            target -= root.val
+            if not root.left and not root.right and target == 0:
+                res.append(path[:])
+            dfs(root.left, target)
+            dfs(root.right, target)
+            path.pop()
+        dfs(root, target)
+        return res
+执行用时：32 ms, 在所有 Python 提交中击败了37.50%的用户
+内存消耗：16 MB, 在所有 Python 提交中击败了21.27%的用户
+通过测试用例：114 / 114
+```
+
+方法二：广度优先搜索
+思路及算法
+
+我们也可以采用广度优先搜索的方式，遍历这棵树。当我们遍历到叶子节点，且此时路径和恰为目标和时，我们就找到了一条满足条件的路径。
+
+为了节省空间，我们使用哈希表记录树中的每一个节点的父节点。每次找到一个满足条件的节点，我们就从该节点出发不断向父节点迭代，即可还原出从根节点到当前节点的路径。
+
+链接：https://leetcode-cn.com/problems/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof/solution/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-68dg/
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution(object):
+    def pathSum(self, root, target):
+        """
+        :type root: TreeNode
+        :type target: int
+        :rtype: List[List[int]]
+        """
+        res = list()
+        parents = collections.defaultdict(lambda: None)#当不存在key时，会返回None。因为根节点是没有父节点的，所以要为其返回None。否则会报错
+
+        def getpath(node):
+            temp = list()
+            while node:
+                temp.append(node.val)
+                node = parents[node]
+            res.append(temp[::-1])
+        
+        if not root:
+            return res
+        
+        que_node = collections.deque([root])
+        que_total = collections.deque([0])
+        while que_node:
+            node = que_node.popleft()
+            total = que_total.popleft() + node.val
+            
+            if not node.left and not node.right and total == target:
+                getpath(node)
+            else:
+                if node.left:
+                    parents[node.left] = node
+                    que_node.append(node.left)
+                    que_total.append(total)
+                if node.right:
+                    parents[node.right] = node
+                    que_node.append(node.right)
+                    que_total.append(total)
+        return res
+执行用时：16 ms, 在所有 Python 提交中击败了99.81%的用户
+内存消耗：15.3 MB, 在所有 Python 提交中击败了96.83%的用户
+通过测试用例：114 / 114
+```
+
+#### [剑指 Offer 36. 二叉搜索树与双向链表](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/)
+
+解题思路：
+本文解法基于性质：二叉搜索树的中序遍历为 递增序列 。
+将 二叉搜索树 转换成一个 “排序的循环双向链表” ，其中包含三个要素：
+
+排序链表： 节点应从小到大排序，因此应使用 中序遍历 “从小到大”访问树的节点。
+双向链表： 在构建相邻节点的引用关系时，设前驱节点 pre 和当前节点 cur ，不仅应构建 pre.right = cur ，也应构建 cur.left = pre 。
+循环链表： 设链表头节点 head 和尾节点 tail ，则应构建 head.left = tail 和 tail.right = head 。
+![Picture1.png](https://pic.leetcode-cn.com/1599401091-PKIjds-Picture1.png)
+
+根据以上分析，考虑使用中序遍历访问树的各节点 cur ；并在访问每个节点时构建 cur 和前驱节点 pre 的引用指向；中序遍历完成后，最后构建头节点和尾节点的引用指向即可。
+
+算法流程：
+dfs(cur): 递归法中序遍历；
+
+1. 终止条件： 当节点 cur 为空，代表越过叶节点，直接返回；
+2. 递归左子树，即 dfs(cur.left) ；
+3. 构建链表：
+   1. 当 pre 为空时： 代表正在访问链表头节点，记为 head ；
+   2. 当 pre 不为空时： 修改双向节点引用，即 pre.right = cur ， cur.left = pre ；
+   3. 保存 cur ： 更新 pre = cur ，即节点 cur 是后继节点的 pre ；
+4. 递归右子树，即 dfs(cur.right) ；
+
+treeToDoublyList(root)：
+
+1. 特例处理： 若节点 root 为空，则直接返回；
+2. 初始化： 空节点 pre ；
+3. 转化为双向链表： 调用 dfs(root) ；
+4. 构建循环链表： 中序遍历完成后，head 指向头节点， pre 指向尾节点，因此修改 head 和 pre 的双向节点引用即可；
+5. 返回值： 返回链表的头节点 head 即可；
+
+
+链接：https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/solution/mian-shi-ti-36-er-cha-sou-suo-shu-yu-shuang-xian-5/
+
+```python
+"""
+# Definition for a Node.
+class Node(object):
+    def __init__(self, val, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+"""
+class Solution(object):
+    def treeToDoublyList(self, root):
+        """
+        :type root: Node
+        :rtype: Node
+        """
+        def dfs(cur):
+            if not cur:
+                return
+            dfs(cur.left)
+            if self.pre:
+                self.pre.right, cur.left = cur, self.pre
+            else:
+                self.head = cur
+            self.pre = cur
+            dfs(cur.right)
+
+        if not root:
+            return
+        
+        self.pre = None
+        dfs(root)
+        self.head.left, self.pre.right = self.pre, self.head
+        return self.head
+执行用时：36 ms, 在所有 Python 提交中击败了50.00%的用户
+内存消耗：13.9 MB, 在所有 Python 提交中击败了83.18%的用户
+通过测试用例：50 / 50
+```
+
+非递归实现中序遍历
+
+二叉搜索树的中序遍历：递增序列
+
+用两个队列实现，一个队列p用于保存遍历的节点，另一个队列q保存中序遍历的递增序列
+p队列，先进先出，如果正在遍历的节点有左子节点，就把正在遍历的节点append进p队列，并把左子节点也append进p队列，并把p的左子节点置为None
+如果正在遍历的左子节点为空，就把正在遍历的节点append进q队列
+如果正在遍历的右子节点不为空，就把右子节点append进p队列
+直至p为空结束遍历
+此时q是一个递增序列
+然后构造新节点，创建新的双向链表就可以了
+考虑特殊情况，根节点为空
+链接：https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/solution/fei-di-gui-shi-xian-shen-du-you-xian-bia-hpl4/
+
+```python
+"""
+# Definition for a Node.
+class Node(object):
+    def __init__(self, val, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+"""
+class Solution(object):
+    def treeToDoublyList(self, root):
+        """
+        :type root: Node
+        :rtype: Node
+        """
+        if not root:
+            return root
+        stack = [root]
+        new_stack = []
+        while stack:
+            cur = stack.pop()
+            if cur.left:
+                stack.append(cur)
+                l = cur.left
+                cur.left = None
+                stack.append(l)
+                continue
+            new_stack.append(cur.val)
+            if cur.right:
+                stack.append(cur.right)
+        head = Node(-1)
+        cur = head
+        for val in new_stack:
+            new_node = Node(val)
+            cur.right = new_node
+            new_node.left = cur
+            cur = cur.right
+        cur.right = head.right
+        head.right.left = cur
+        return head.right
+执行用时：36 ms, 在所有 Python 提交中击败了50.00%的用户
+内存消耗：13.9 MB, 在所有 Python 提交中击败了82.49%的用户
+通过测试用例：50 / 50
+```
+
+非递归形式+Python生成器
+
+链接：https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/solution/fei-di-gui-xing-shi-pythonsheng-cheng-qi-h5of/
+
+```Python
+"""
+# Definition for a Node.
+class Node(object):
+    def __init__(self, val, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+"""
+class Solution(object):
+    def treeToDoublyList(self, root):
+        """
+        :type root: Node
+        :rtype: Node
+        """
+        def generator(root):
+            stack = []
+            cur = root
+            while cur is not None or stack:
+                while cur is not None:
+                    stack.append(cur)
+                    cur = cur.left
+                cur = stack.pop()
+                yield cur
+                cur = cur.right
+        if not root:
+            return root
+        
+        gen = generator(root)
+        head = next(gen)
+        cur = head
+        for node in gen:
+            cur.right = node
+            node.left = cur
+            cur = node
+        head.left = cur
+        cur.right = head
+        return head
+执行用时：32 ms, 在所有 Python 提交中击败了79.03%的用户
+内存消耗：13.6 MB, 在所有 Python 提交中击败了96.54%的用户
+通过测试用例：50 / 50
+```
+
+#### [剑指 Offer 54. 二叉搜索树的第k大节点](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-di-kda-jie-dian-lcof/)
+
+先中序遍历，在找第k大节点
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def kthLargest(self, root, k):
+        """
+        :type root: TreeNode
+        :type k: int
+        :rtype: int
+        """
+        stack = []
+        def dfs(root):
+            if not root:
+                return
+            dfs(root.left)
+            stack.append(root.val)
+            dfs(root.right)
+        dfs(root)
+        return stack[-k]
+执行用时：36 ms, 在所有 Python 提交中击败了70.19%的用户
+内存消耗：20.5 MB, 在所有 Python 提交中击败了83.30%的用户
+通过测试用例：91 / 91
+```
+
+倒中序遍历
+
+```Python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def kthLargest(self, root, k):
+        """
+        :type root: TreeNode
+        :type k: int
+        :rtype: int
+        """
+        stack = []
+        while root or stack:
+            while root:
+                stack.append(root)
+                root = root.right
+            root = stack.pop()
+            k -= 1
+            if k == 0:
+                return root.val
+            root = root.left
+执行用时：24 ms, 在所有 Python 提交中击败了99.32%的用户
+内存消耗：20.4 MB, 在所有 Python 提交中击败了92.67%的用户
+通过测试用例：91 / 91
+```
 
