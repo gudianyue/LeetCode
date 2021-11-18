@@ -2828,3 +2828,134 @@ class Solution(object):
 通过测试用例：91 / 91
 ```
 
+#### [剑指 Offer 45. 把数组排成最小的数](https://leetcode-cn.com/problems/ba-shu-zu-pai-cheng-zui-xiao-de-shu-lcof/)
+
+解题思路：
+此题求拼接起来的最小数字，本质上是一个排序问题。设数组 numsnums 中任意两数字的字符串为 xx 和 yy ，则规定 排序判断规则 为：
+
+若拼接字符串 x + y > y + x ，则 x “大于” y ；
+反之，若 x + y < y + x，则 x “小于” y ；
+xx“小于” y 代表：排序完成后，数组中 x 应在 y 左边；“大于” 则反之。
+
+根据以上规则，套用任何排序方法对 nums 执行排序即可。
+
+![Picture1.png](https://pic.leetcode-cn.com/95e81dbccc44f26292d88c509afd68204a86b37d342f83d109fa7aa0cd4a6049-Picture1.png)
+链接：https://leetcode-cn.com/problems/ba-shu-zu-pai-cheng-zui-xiao-de-shu-lcof/solution/mian-shi-ti-45-ba-shu-zu-pai-cheng-zui-xiao-de-s-4/
+快速排序（自己写的)
+
+```python
+class Solution(object):
+    def minNumber(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: str
+        """
+        def quicksort(ilist):
+            if len(ilist) <= 1:
+                return ilist
+            left = []
+            right = []
+            for i in ilist[1:]:
+                if str(i) + str(ilist[0]) <= str(ilist[0]) + str(i):
+                    left.append(i)
+                else:
+                    right.append(i)
+            return quicksort(left) + [ilist[0]] + quicksort(right)
+        nums = quicksort(nums)
+        strs = [str(num) for num in nums]
+        return ''.join(strs)
+执行用时：36 ms, 在所有 Python 提交中击败了30.98%的用户
+内存消耗：13.2 MB, 在所有 Python 提交中击败了48.42%的用户
+通过测试用例：222 / 222
+```
+
+快速排序（大佬写的）
+
+```python
+class Solution(object):
+    def minNumber(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: str
+        """
+        def quicksort(l, r):
+            if l >= r:
+                return 
+            i, j = l, r
+            while i < j:
+                while strs[j] + strs[l] >= strs[l] + strs[j] and i < j: j -= 1
+                while strs[i] + strs[l] <= strs[l] + strs[i] and i < j: i += 1
+                strs[i], strs[j] = strs[j], strs[i]
+            strs[i], strs[l] = strs[l], strs[i]#由于是j指针先开始移动，所以最后停下的时候一定是i、j均指向一个小于等于l处的值，交换i、l处的值
+            quicksort(l, i-1)
+            quicksort(i+1, r)
+        strs = [str(num) for num in nums]
+        quicksort(0, len(strs)-1)
+        return ''.join(strs)
+执行用时：20 ms, 在所有 Python 提交中击败了90.35%的用户
+内存消耗：13.2 MB, 在所有 Python 提交中击败了39.70%的用户
+通过测试用例：222 / 222
+```
+
+#### [剑指 Offer 61. 扑克牌中的顺子](https://leetcode-cn.com/problems/bu-ke-pai-zhong-de-shun-zi-lcof/)
+
+解题思路：
+根据题意，此 5 张牌是顺子的 充分条件 如下：
+
+除大小王外，所有牌 无重复 ；
+设此 5 张牌中最大的牌为 max ，最小的牌为 min（大小王除外），则需满足：
+max - min < 5
+max−min<5
+
+因而，可将问题转化为：此 5 张牌是否满足以上两个条件？
+
+![Picture1.png](https://pic.leetcode-cn.com/df03847e2d04a3fcb5649541d4b6733fb2cb0d9293c3433823e04935826c33ef-Picture1.png)
+链接：https://leetcode-cn.com/problems/bu-ke-pai-zhong-de-shun-zi-lcof/solution/mian-shi-ti-61-bu-ke-pai-zhong-de-shun-zi-ji-he-se/
+
+```python
+class Solution(object):
+    def isStraight(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: bool
+        """
+        repeat = []
+        ma, mi = 0, 14
+        for num in nums:
+            if num == 0:
+                continue
+            elif num in repeat:
+                return False
+            else:
+                repeat.append(num)
+                ma = max(ma, num)
+                mi = min(mi, num)
+        if ma - mi < 5:
+            return True
+        else:
+            return False
+执行用时：16 ms, 在所有 Python 提交中击败了76.16%的用户
+内存消耗：13.1 MB, 在所有 Python 提交中击败了37.78%的用户
+通过测试用例：203 / 203
+```
+
+排序法
+
+```python
+class Solution(object):
+    def isStraight(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: bool
+        """
+        joker = 0
+        nums.sort()
+        for i in range(4):
+            if nums[i] == 0: joker += 1 
+            elif nums[i] == nums[i + 1]: return False 
+        return nums[4] - nums[joker] < 5 
+执行用时：12 ms, 在所有 Python 提交中击败了93.13%的用户
+内存消耗：13 MB, 在所有 Python 提交中击败了55.15%的用户
+通过测试用例：203 / 203
+```
+
