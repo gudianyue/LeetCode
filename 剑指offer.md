@@ -2959,3 +2959,113 @@ class Solution(object):
 通过测试用例：203 / 203
 ```
 
+#### [剑指 Offer 40. 最小的k个数](https://leetcode-cn.com/problems/zui-xiao-de-kge-shu-lcof/)
+
+排序后输出
+
+```Python
+class Solution(object):
+    def getLeastNumbers(self, arr, k):
+        """
+        :type arr: List[int]
+        :type k: int
+        :rtype: List[int]
+        """
+        def dfs(l, r):
+            if l >= r:
+                return
+            i, j = l, r
+            while i < j:
+                while arr[j] >= arr[l] and i < j: j -= 1
+                while arr[i] <= arr[l] and i < j: i += 1
+                arr[i], arr[j] = arr[j], arr[i]
+            arr[i], arr[l] = arr[l], arr[i]
+            dfs(l, i-1)
+            dfs(i+1, r)
+        if k == 0:
+            return []
+        dfs(0, len(arr)-1)
+        return arr[:k]
+执行用时：196 ms, 在所有 Python 提交中击败了17.62%的用户
+内存消耗：16.5 MB, 在所有 Python 提交中击败了14.60%的用户
+通过测试用例：38 / 38
+```
+
+使用库函数
+
+```python
+class Solution(object):
+    def getLeastNumbers(self, arr, k):
+        """
+        :type arr: List[int]
+        :type k: int
+        :rtype: List[int]
+        """
+        arr.sort()
+        if k == 0:
+            return []
+        return arr[:k]
+执行用时：36 ms, 在所有 Python 提交中击败了90.05%的用户
+内存消耗：14.3 MB, 在所有 Python 提交中击败了52.33%的用户
+通过测试用例：38 / 38
+```
+
+题目只要求返回最小的 k 个数，对这 k 个数的顺序并没有要求。因此，只需要将数组划分为 最小的 kk 个数 和 其他数字 两部分即可，而快速排序的哨兵划分可完成此目标。
+链接：https://leetcode-cn.com/problems/zui-xiao-de-kge-shu-lcof/solution/jian-zhi-offer-40-zui-xiao-de-k-ge-shu-j-9yze/
+
+```python
+class Solution(object):
+    def getLeastNumbers(self, arr, k):
+        """
+        :type arr: List[int]
+        :type k: int
+        :rtype: List[int]
+        """
+        def dfs(l, r):
+            i, j = l, r
+            while i < j:
+                while arr[j] >= arr[l] and i < j: j -= 1
+                while arr[i] <= arr[l] and i < j: i += 1
+                arr[i], arr[j] = arr[j], arr[i]
+            arr[i], arr[l] = arr[l], arr[i]
+            if k < i: return dfs(l, i-1)
+            if k > i: return dfs(i+1, r)
+            return arr[:k]
+        if k == 0:
+            return []
+        elif k >= len(arr):
+            return arr
+        else:
+            return dfs(0, len(arr)-1)
+执行用时：80 ms, 在所有 Python 提交中击败了42.05%的用户
+内存消耗：16.7 MB, 在所有 Python 提交中击败了5.73%的用户
+通过测试用例：38 / 38
+```
+
+堆排序
+
+```python
+class Solution(object):
+    def getLeastNumbers(self, arr, k):
+        """
+        :type arr: List[int]
+        :type k: int
+        :rtype: List[int]
+        """
+        if k == 0:
+            return []
+        elif k >= len(arr):
+            return arr
+        hp = [-x for x in arr[:k]]
+        heapq.heapify(hp)
+        for i in range(k, len(arr)):
+            if -hp[0] > arr[i]:
+                heapq.heappop(hp)
+                heapq.heappush(hp, -arr[i])
+        ans = [-x for x in hp]
+        return ans
+执行用时：60 ms, 在所有 Python 提交中击败了62.27%的用户
+内存消耗：14.5 MB, 在所有 Python 提交中击败了37.41%的用户
+通过测试用例：38 / 38
+```
+
