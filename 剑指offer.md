@@ -3069,3 +3069,248 @@ class Solution(object):
 通过测试用例：38 / 38
 ```
 
+#### [剑指 Offer 41. 数据流中的中位数](https://leetcode-cn.com/problems/shu-ju-liu-zhong-de-zhong-wei-shu-lcof/)
+
+解题思路：
+给定一长度为 N 的无序数组，其中位数的计算方法：首先对数组执行排序（使用 O(NlogN) 时间），然后返回中间元素即可（使用O(1) 时间）。
+
+针对本题，根据以上思路，可以将数据流保存在一个列表中，并在添加元素时 保持数组有序 。此方法的时间复杂度为 O(N) ，其中包括： 查找元素插入位置 O(logN) （二分查找）、向数组某位置插入元素O(N) （插入位置之后的元素都需要向后移动一位）。
+
+借助 堆 可进一步优化时间复杂度。
+
+建立一个 小顶堆 A 和 大顶堆 B ，各保存列表的一半元素，且规定：
+
+A 保存 较大 的一半，长度为$ \frac{N}{2} $（ N 为偶数）或$ \frac{N+1}{2} $（ N 为奇数）；
+B 保存 较小 的一半，长度为$ \frac{N}{2} $（ N 为偶数）或$ \frac{N-1}{2} $（ N 为奇数）；
+随后，中位数可仅根据 A, B的堆顶元素计算得到。
+链接：https://leetcode-cn.com/problems/shu-ju-liu-zhong-de-zhong-wei-shu-lcof/solution/mian-shi-ti-41-shu-ju-liu-zhong-de-zhong-wei-shu-y/
+![Picture1.png](https://pic.leetcode-cn.com/25837f1b195e56de20587a4ed97d9571463aa611789e768914638902add351f4-Picture1.png)
+
+```python
+class MedianFinder(object):
+
+    def __init__(self):
+        """
+        initialize your data structure here.
+        """
+        self.A = []
+        self.B = []
+
+
+    def addNum(self, num):
+        """
+        :type num: int
+        :rtype: None
+        """
+        if len(self.A) == len(self.B):
+            heapq.heappush(self.B, -num)
+            heapq.heappush(self.A, -heapq.heappop(self.B))
+        else:
+            heapq.heappush(self.A, num)
+            heapq.heappush(self.B, -heapq.heappop(self.A))
+
+
+    def findMedian(self):
+        """
+        :rtype: float
+        """
+        return self.A[0] if len(self.A) != len(self.B) else (self.A[0] - self.B[0]) / 2.0
+执行用时：460 ms, 在所有 Python 提交中击败了58.41%的用户
+内存消耗：25.4 MB, 在所有 Python 提交中击败了21.96%的用户
+通过测试用例：18 / 18
+```
+
+#### [剑指 Offer 55 - I. 二叉树的深度](https://leetcode-cn.com/problems/er-cha-shu-de-shen-du-lcof/)
+
+最大广度搜索。创建两个队列，一个用于保存当前层的节点，另一个保存当前层节点的子节点。当当前层节点遍历完毕深度+1，将下一层的节点赋予当前层队列并清空下一层节点队列，循环执行直至两个队列均为空。
+
+```Python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def maxDepth(self, root):
+        """
+        :type root: TreeNode
+        :rtype: int
+        """
+        if not root:
+            return 0
+        depth = 0
+        q = collections.deque()
+        s = collections.deque()
+        q.append(root)
+        while q:
+            temp = q.popleft()
+            if temp.left:
+                s.append(temp.left)
+            if temp.right:
+                s.append(temp.right)
+            if not q:
+                depth += 1
+                if not s:
+                    break
+                else:
+                    q, s = s, q
+        return depth
+执行用时：28 ms, 在所有 Python 提交中击败了49.81%的用户
+内存消耗：15.8 MB, 在所有 Python 提交中击败了36.62%的用户
+通过测试用例：39 / 39
+```
+
+树的遍历方式总体分为两类：深度优先搜索（DFS）、广度优先搜索（BFS）；
+
+* 常见的 DFS ： 先序遍历、中序遍历、后序遍历；
+* 常见的 BFS ： 层序遍历（即按层遍历）。
+
+求树的深度需要遍历树的所有节点，本文将介绍基于 后序遍历（DFS） 和 层序遍历（BFS） 的两种解法。
+方法一：后序遍历（DFS）
+树的后序遍历 / 深度优先搜索往往利用 递归 或 栈 实现，本文使用递归实现。
+关键点： 此树的深度和其左（右）子树的深度之间的关系。显然，此树的深度 等于 左子树的深度 与 右子树的深度 中的 最大值+1 。
+链接：https://leetcode-cn.com/problems/er-cha-shu-de-shen-du-lcof/solution/mian-shi-ti-55-i-er-cha-shu-de-shen-du-xian-xu-bia/
+
+![Picture1.png](https://pic.leetcode-cn.com/9b063f1f2b7ba125b97a2a11c5f774c0f8ff4df594696993a8eb8282750dae0d-Picture1.png)
+
+算法解析：
+终止条件： 当 root 为空，说明已越过叶节点，因此返回 深度 00 。
+递推工作： 本质上是对树做后序遍历。
+计算节点 root 的 左子树的深度 ，即调用 maxDepth(root.left)；
+计算节点 root 的 右子树的深度 ，即调用 maxDepth(root.right)；
+返回值： 返回 此树的深度 ，即 max(maxDepth(root.left), maxDepth(root.right)) + 1。
+链接：https://leetcode-cn.com/problems/er-cha-shu-de-shen-du-lcof/solution/mian-shi-ti-55-i-er-cha-shu-de-shen-du-xian-xu-bia/
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def maxDepth(self, root):
+        """
+        :type root: TreeNode
+        :rtype: int
+        """
+
+        if not root:
+            return 0
+        else:
+            return max(self.maxDepth(root.left), self.maxDepth(root.right)) + 1
+执行用时：24 ms, 在所有 Python 提交中击败了79.74%的用户
+内存消耗：15.6 MB, 在所有 Python 提交中击败了84.20%的用户
+通过测试用例：39 / 39
+```
+
+#### [剑指 Offer 55 - II. 平衡二叉树](https://leetcode-cn.com/problems/ping-heng-er-cha-shu-lcof/)
+
+由于可能存在子树之间最大深度符合条件，但是子树内部的左右子树不符合条件的情况（节点深度由左右子树的最大值决定，最小值不影响），故需要遍历所有可能节点。先利用递归求出节点左右子树的深度比较是否符合条件，符合则递归地遍历该节点的左右子节点直至节点为空。否则返回False。
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def isBalanced(self, root):
+        """
+        :type root: TreeNode
+        :rtype: bool
+        """
+        def dfs(root):
+            if not root:
+                return 0
+            else:
+                return max(dfs(root.left), dfs(root.right)) + 1
+        if not root:
+            return True
+        def isB(root):
+            if not root:
+                return True
+            elif abs(dfs(root.left) - dfs(root.right)) > 1:
+                return False
+            else:
+                return isB(root.left) and isB(root.right)
+        return isB(root)
+执行用时：40 ms, 在所有 Python 提交中击败了52.26%的用户
+内存消耗：18.2 MB, 在所有 Python 提交中击败了57.96%的用户
+通过测试用例：227 / 227
+```
+
+官方代码优化：
+
+https://leetcode-cn.com/problems/ping-heng-er-cha-shu-lcof/solution/ping-heng-er-cha-shu-by-leetcode-solutio-6r1g/
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def isBalanced(self, root):
+        """
+        :type root: TreeNode
+        :rtype: bool
+        """
+        def dfs(root):
+            if not root:
+                return 0
+            else:
+                return max(dfs(root.left), dfs(root.right)) + 1
+        if not root:
+            return True
+        else:
+            return abs(dfs(root.left) - dfs(root.right)) <= 1 and self.isBalanced(root.left) and self.isBalanced(root.right)
+执行用时：36 ms, 在所有 Python 提交中击败了66.75%的用户
+内存消耗：18.4 MB, 在所有 Python 提交中击败了12.35%的用户
+通过测试用例：227 / 227
+```
+
+方法二：自底向上的递归
+上面的方法由于是自顶向下递归，因此对于同一个节点，函数 dfs 会被重复调用，导致时间复杂度较高。如果使用自底向上的做法，则对于每个节点，函数 dfs 只会被调用一次。
+
+自底向上递归的做法类似于后序遍历，对于当前遍历到的节点，先递归地判断其左右子树是否平衡，再判断以当前节点为根的子树是否平衡。如果一棵子树是平衡的，则返回其高度（高度一定是非负整数），否则返回−1。如果存在一棵子树不平衡，则整个二叉树一定不平衡。
+
+作者：LeetCode-Solution
+链接：https://leetcode-cn.com/problems/ping-heng-er-cha-shu-lcof/solution/ping-heng-er-cha-shu-by-leetcode-solutio-6r1g/
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def isBalanced(self, root):
+        """
+        :type root: TreeNode
+        :rtype: bool
+        """
+        def height(root):
+            if not root:
+                return 0
+            leftheight = height(root.left)
+            rightheight = height(root.right)
+            if leftheight == -1 or rightheight == -1 or abs(leftheight - rightheight) > 1:
+                return -1
+            else:
+                return max(leftheight, rightheight) + 1
+        return height(root) >= 0
+执行用时：20 ms, 在所有 Python 提交中击败了99.52%的用户
+内存消耗：18.3 MB, 在所有 Python 提交中击败了31.36%的用户
+通过测试用例：227 / 227
+```
+
