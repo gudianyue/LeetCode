@@ -2831,11 +2831,11 @@ class Solution(object):
 #### [剑指 Offer 45. 把数组排成最小的数](https://leetcode-cn.com/problems/ba-shu-zu-pai-cheng-zui-xiao-de-shu-lcof/)
 
 解题思路：
-此题求拼接起来的最小数字，本质上是一个排序问题。设数组 numsnums 中任意两数字的字符串为 xx 和 yy ，则规定 排序判断规则 为：
+此题求拼接起来的最小数字，本质上是一个排序问题。设数组 numsnums 中任意两数字的字符串为 x 和 y ，则规定 排序判断规则 为：
 
 若拼接字符串 x + y > y + x ，则 x “大于” y ；
 反之，若 x + y < y + x，则 x “小于” y ；
-xx“小于” y 代表：排序完成后，数组中 x 应在 y 左边；“大于” 则反之。
+x“小于” y 代表：排序完成后，数组中 x 应在 y 左边；“大于” 则反之。
 
 根据以上规则，套用任何排序方法对 nums 执行排序即可。
 
@@ -3312,5 +3312,362 @@ class Solution(object):
 执行用时：20 ms, 在所有 Python 提交中击败了99.52%的用户
 内存消耗：18.3 MB, 在所有 Python 提交中击败了31.36%的用户
 通过测试用例：227 / 227
+```
+
+#### [剑指 Offer 64. 求1+2+…+n](https://leetcode-cn.com/problems/qiu-12n-lcof/)
+
+链接：https://leetcode-cn.com/problems/qiu-12n-lcof/solution/mian-shi-ti-64-qiu-1-2-nluo-ji-fu-duan-lu-qing-xi-/
+
+链接：https://leetcode-cn.com/problems/qiu-12n-lcof/solution/64-pythonji-chu-ni-que-ding-ni-zhi-dao-ma-by-lulla/
+
+（1）如果多个变量均非0（包括None、False等），那么返回最后一个变量的值。如3 and 2 and 'a'的返回值为'a'；
+（2）如果多个变量中存在0值，则返回第一个0值。如1 and 'a' and 0 and None的返回值为0。
+
+利用and替代if，利用递归替代while。
+
+```python
+class Solution(object):
+    def sumNums(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        return n and self.sumNums(n-1) + n
+执行用时：32 ms, 在所有 Python 提交中击败了39.09%的用户
+内存消耗：20.1 MB, 在所有 Python 提交中击败了47.88%的用户
+通过测试用例：35 / 35
+```
+
+#### [剑指 Offer 68 - I. 二叉搜索树的最近公共祖先](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-zui-jin-gong-gong-zu-xian-lcof/)
+
+思路与算法
+
+我们从根节点开始遍历；
+
+如果当前节点的值大于 p 和 q 的值，说明 p 和 q 应该在当前节点的左子树，因此将当前节点移动到它的左子节点；
+
+如果当前节点的值小于 p 和 q 的值，说明 p 和 q 应该在当前节点的右子树，因此将当前节点移动到它的右子节点；
+
+如果当前节点的值不满足上述两条要求，那么说明当前节点就是「分岔点」。此时，p 和 q 要么在当前节点的不同的子树中，要么其中一个就是当前节点。
+
+可以发现，如果我们将这两个节点放在一起遍历，我们就省去了存储路径需要的空间。
+
+作者：LeetCode-Solution
+链接：https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-zui-jin-gong-gong-zu-xian-lcof/solution/er-cha-sou-suo-shu-de-zui-jin-gong-gong-0wpw1/
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def lowestCommonAncestor(self, root, p, q):
+        """
+        :type root: TreeNode
+        :type p: TreeNode
+        :type q: TreeNode
+        :rtype: TreeNode
+        """
+        temp = root
+        while temp:
+            if p.val < temp.val and q.val < temp.val:
+                temp = temp.left
+            elif p.val > temp.val and q.val > temp.val:
+                temp = temp.right
+            else:
+                break
+        return temp
+执行用时：48 ms, 在所有 Python 提交中击败了87.07%的用户
+内存消耗：20.8 MB, 在所有 Python 提交中击败了85.92%的用户
+通过测试用例：27 / 27
+```
+
+#### [剑指 Offer 68 - II. 二叉树的最近公共祖先](https://leetcode-cn.com/problems/er-cha-shu-de-zui-jin-gong-gong-zu-xian-lcof/)
+
+相较于上一题，此题没有指定为二叉搜索树，因而不能利用数值判断。
+
+考虑通过递归对二叉树进行先序遍历，当遇到节点 pp 或 qq 时返回。从底至顶回溯，当节点 p, q在节点 root 的异侧时，节点 root 即为最近公共祖先，则向上返回 root 。
+
+递归解析：
+
+1. 终止条件：
+   * 当越过叶节点，则直接返回 null ；
+   * 当 root等于 p, q，则直接返回 root ；
+2. 递推工作：
+   * 开启递归左子节点，返回值记为 left ；
+   * 开启递归右子节点，返回值记为 right ；
+3. 返回值： 根据 left和 right ，可展开为四种情况；
+   * 当 left 和 right 同时为空 ：说明 root的左 / 右子树中都不包含 p,q ，返回 null ；
+   * 当 left和 right 同时不为空 ：说明 p, q分列在 root的 异侧 （分别在 左 / 右子树），因此 root为最近公共祖先，返回 root；
+   * 当 left为空 ，right 不为空 ：p,q 都不在 root的左子树中，直接返回 right 。具体可分为两种情况：
+     * p,q 其中一个在 root的 右子树 中，此时 right 指向 p（假设为 p ）；
+     * p,q两节点都在 root 的 右子树 中，此时的 right 指向 最近公共祖先节点 ；
+4. 当 left 不为空 ， right 为空 ：与情况 3. 同理；
+
+作者：jyd
+链接：https://leetcode-cn.com/problems/er-cha-shu-de-zui-jin-gong-gong-zu-xian-lcof/solution/mian-shi-ti-68-ii-er-cha-shu-de-zui-jin-gong-gon-7/
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def lowestCommonAncestor(self, root, p, q):
+        """
+        :type root: TreeNode
+        :type p: TreeNode
+        :type q: TreeNode
+        :rtype: TreeNode
+        """
+        if not root or root == p or root == q:
+            return root
+        left = self.lowestCommonAncestor(root.left, p, q)
+        right = self.lowestCommonAncestor(root.right, p, q)
+        if not left:
+            return right
+        if not right:
+            return left
+        return root
+执行用时：52 ms, 在所有 Python 提交中击败了54.10%的用户
+内存消耗：24.8 MB, 在所有 Python 提交中击败了63.83%的用户
+通过测试用例：31 / 31
+```
+
+#### [剑指 Offer 07. 重建二叉树](https://leetcode-cn.com/problems/zhong-jian-er-cha-shu-lcof/)
+
+解题思路：
+前序遍历性质： 节点按照 [ 根节点 | 左子树 | 右子树 ] 排序。
+中序遍历性质： 节点按照 [ 左子树 | 根节点 | 右子树 ] 排序。
+
+以题目示例为例：
+
+前序遍历划分 [ 3 | 9 | 20 15 7 ]
+中序遍历划分 [ 9 | 3 | 15 20 7 ]
+根据以上性质，可得出以下推论：
+
+前序遍历的首元素 为 树的根节点 node 的值。
+在中序遍历中搜索根节点 node 的索引 ，可将 中序遍历 划分为 [ 左子树 | 根节点 | 右子树 ] 。
+根据中序遍历中的左（右）子树的节点数量，可将 前序遍历 划分为 [ 根节点 | 左子树 | 右子树 ] 。
+
+![Picture1.png](https://pic.leetcode-cn.com/1629825510-roByLr-Picture1.png)
+
+通过以上三步，可确定 三个节点 ：1.树的根节点、2.左子树根节点、3.右子树根节点。
+
+根据「分治算法」思想，对于树的左、右子树，仍可复用以上方法划分子树的左右子树。
+
+分治算法解析：
+递推参数： 根节点在前序遍历的索引 root 、子树在中序遍历的左边界 left 、子树在中序遍历的右边界 right ；
+
+终止条件： 当 left > right ，代表已经越过叶节点，此时返回 nullnull ；
+
+递推工作：
+
+建立根节点 node ： 节点值为 preorder[root] ；
+划分左右子树： 查找根节点在中序遍历 inorder 中的索引 i ；
+为了提升效率，本文使用哈希表 dic 存储中序遍历的值与索引的映射，查找操作的时间复杂度为 O(1)O(1) ；
+
+构建左右子树： 开启左右子树递归；
+
+![image-20211122160600419](E:\MyGit\LeetCode\剑指offer.assets\image-20211122160600419.png)
+
+TIPS： i - left + root + 1含义为 根节点索引 + 左子树长度 + 1
+
+返回值： 回溯返回 node ，作为上一层递归中根节点的左 / 右子节点；
+
+复杂度分析：
+时间复杂度 O(N) ： 其中 N 为树的节点数量。初始化 HashMap 需遍历 inorder ，占用 O(N) 。递归共建立 N 个节点，每层递归中的节点建立、搜索操作占用 O(1) ，因此使用 O(N)时间。
+空间复杂度 O(N) ： HashMap 使用 O(N) 额外空间；最差情况下（输入二叉树为链表时），递归深度达到 N ，占用 O(N) 的栈帧空间；因此总共使用 O(N)空间。
+
+作者：jyd
+链接：https://leetcode-cn.com/problems/zhong-jian-er-cha-shu-lcof/solution/mian-shi-ti-07-zhong-jian-er-cha-shu-di-gui-fa-qin/
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def buildTree(self, preorder, inorder):
+        """
+        :type preorder: List[int]
+        :type inorder: List[int]
+        :rtype: TreeNode
+        """
+        def recur(root, left, right):
+            if left > right:
+                return 
+            node = TreeNode(preorder[root])
+            i = dic[preorder[root]]
+            node.left = recur(root+1, left, i-1)
+            node.right = recur(i-left+root+1, i+1, right)#i-left为左子树长度，root+1为当前左子树根节点位置，前序遍历性质： 节点按照 [ 根节点 | 左子树 | 右子树 ] 排序。左子树根节点右移左子树长度即为右子树根节点位置。
+            return node
+        dic = {}
+        for i in range(len(inorder)):
+            dic[inorder[i]] = i
+        return recur(0, 0, len(inorder)-1)
+执行用时：24 ms, 在所有 Python 提交中击败了92.86%的用户
+内存消耗：17.5 MB, 在所有 Python 提交中击败了67.86%的用户
+通过测试用例：203 / 203
+```
+
+#### [剑指 Offer 16. 数值的整数次方](https://leetcode-cn.com/problems/shu-zhi-de-zheng-shu-ci-fang-lcof/)
+
+利用位运算。
+
+对于n<0，将n取绝对值，并将x取倒数，从而合并正负两种情况。
+
+对于n，通过每次右移一位并判断它和1“与”的结果，将$x^n$分解为$x, x^2, x^4, ...$某些组合连乘的结果。举个例子，对于n=10，它的二进制是1010，可以将$x^{10}$表示为$x^2 * x^8$，即$x^{2^3} * x^{2^1}$
+
+```python 
+class Solution(object):
+    def myPow(self, x, n):
+        """
+        :type x: float
+        :type n: int
+        :rtype: float
+        """
+        if n < 0:
+            x = 1/x
+            n = abs(n)
+        out = 1            
+        while n > 0:
+            if n & 1:
+                out = out * x
+            x = x * x
+            n >>= 1
+        return out
+执行用时：16 ms, 在所有 Python 提交中击败了87.61%的用户
+内存消耗：12.9 MB, 在所有 Python 提交中击败了88.04%的用户
+通过测试用例：304 / 304
+```
+
+#### [剑指 Offer 33. 二叉搜索树的后序遍历序列](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-hou-xu-bian-li-xu-lie-lcof/)
+
+方法一：递归分治
+根据二叉搜索树的定义，可以通过递归，判断所有子树的 正确性 （即其后序遍历是否满足二叉搜索树的定义） ，若所有子树都正确，则此序列为二叉搜索树的后序遍历。
+递归解析：
+终止条件： 当i≥j ，说明此子树节点数量 ≤1 ，无需判别正确性，因此直接返回 true ；
+递推工作：
+划分左右子树： 遍历后序遍历的 \[i, j\] 区间元素，寻找 第一个大于根节点 的节点，索引记为 m 。此时，可划分出左子树区间 \[i,m-1\] 、右子树区间 \[m, j - 1\]、根节点索引 j。
+判断是否为二叉搜索树：
+左子树区间 \[i, m - 1\]内的所有节点都应 <postorder[j] 。而第 1.划分左右子树 步骤已经保证左子树区间的正确性，因此只需要判断右子树区间即可。
+右子树区间\[m, j-1\]内的所有节点都应 >postorder[j] 。实现方式为遍历，当遇到 ≤postorder[j] 的节点则跳出；则可通过 p = j 判断是否为二叉搜索树。
+返回值： 所有子树都需正确才可判定正确，因此使用 与逻辑符 \&\&连接。
+p = j： 判断 此树 是否正确。
+recur(i, m - 1) ： 判断 此树的左子树 是否正确。
+recur(m, j - 1)： 判断 此树的右子树 是否正确。
+
+作者：jyd
+链接：https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-hou-xu-bian-li-xu-lie-lcof/solution/mian-shi-ti-33-er-cha-sou-suo-shu-de-hou-xu-bian-6/
+
+```python
+class Solution(object):
+    def verifyPostorder(self, postorder):
+        """
+        :type postorder: List[int]
+        :rtype: bool
+        """
+        def recur(i, j):
+            if i >= j:
+                return True
+            p = i
+            while postorder[p] < postorder[j]:
+                p += 1
+            m = p
+            while postorder[p] > postorder[j]:
+                p += 1
+            return p == j and recur(i, m-1) and recur(m, j-1)
+        return recur(0, len(postorder)-1)
+执行用时：12 ms, 在所有 Python 提交中击败了97.21%的用户
+内存消耗：13 MB, 在所有 Python 提交中击败了71.07%的用户
+通过测试用例：23 / 23
+```
+
+#### [剑指 Offer 15. 二进制中1的个数](https://leetcode-cn.com/problems/er-jin-zhi-zhong-1de-ge-shu-lcof/)
+
+位运算，每次将n右移一位，并将其与1进行“与”运算，从而判断最后一位是不是1.
+
+```python
+class Solution(object):
+    def hammingWeight(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        total = 0
+        while n > 0:
+            if n & 1 :
+                total += 1
+            n >>= 1
+        return total
+执行用时：12 ms, 在所有 Python 提交中击败了94.75%的用户
+内存消耗：13.1 MB, 在所有 Python 提交中击败了43.49%的用户
+通过测试用例：601 / 601
+```
+
+方法二：巧用 n \& (n - 1)
+(n−1) 解析： 二进制数字 n 最右边的 1 变成 0 ，此 1 右边的 0 都变成 1 。
+n \& (n - 1) 解析： 二进制数字 n 最右边的 1 变成 0 ，其余不变。
+
+![Picture10.png](https://pic.leetcode-cn.com/9bc8ab7ba242888d5291770d35ef749ae76ee2f1a51d31d729324755fc4b1b1c-Picture10.png)
+
+算法流程：
+
+1. 初始化数量统计变量 res 。
+2. 循环消去最右边的 1 ：当 n = 0 时跳出。
+   * res += 1 ： 统计变量加 1 ；
+   * n &= n - 1 ： 消去数字 n 最右边的 1 。
+3. 返回统计数量 res 。
+
+作者：jyd
+链接：https://leetcode-cn.com/problems/er-jin-zhi-zhong-1de-ge-shu-lcof/solution/mian-shi-ti-15-er-jin-zhi-zhong-1de-ge-shu-wei-yun/
+
+```python
+class Solution(object):
+    def hammingWeight(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        total = 0
+        while n > 0:
+            total += 1
+            n &= n-1
+        return total
+执行用时：12 ms, 在所有 Python 提交中击败了94.75%的用户
+内存消耗：12.9 MB, 在所有 Python 提交中击败了77.67%的用户
+通过测试用例：601 / 601
+```
+
+#### [剑指 Offer 65. 不用加减乘除做加法](https://leetcode-cn.com/problems/bu-yong-jia-jian-cheng-chu-zuo-jia-fa-lcof/)
+
+很困难的简单题，解题过程参考大佬链接：https://leetcode-cn.com/problems/bu-yong-jia-jian-cheng-chu-zuo-jia-fa-lcof/solution/mian-shi-ti-65-bu-yong-jia-jian-cheng-chu-zuo-ji-7/
+
+```python
+class Solution(object):
+    def add(self, a, b):
+        """
+        :type a: int
+        :type b: int
+        :rtype: int
+        """
+        x = 0xffffffff
+        a, b = a & x, b & x
+        while b != 0:
+            a, b = (a ^ b), (a & b) << 1 & x
+        return a if a <= 0x7fffffff else ~(a ^ x)
+执行用时：12 ms, 在所有 Python 提交中击败了90.32%的用户
+内存消耗：13.1 MB, 在所有 Python 提交中击败了30.88%的用户
+通过测试用例：51 / 51
 ```
 
