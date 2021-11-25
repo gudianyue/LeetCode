@@ -3671,3 +3671,192 @@ class Solution(object):
 通过测试用例：51 / 51
 ```
 
+#### [剑指 Offer 56 - I. 数组中数字出现的次数](https://leetcode-cn.com/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-lcof/)
+
+位运算，本题主要是运用相同的数字与自身“异或”运算时为0的思路来解决。关键是题中有两个不同的数字，且相同数字是随机分布在数组中，并非连续出现。题目本身限制了空间和运行时间。导致哈希表和暴力法失效。
+
+通过将所有的元素都异或一遍，剩下的就是两个不同元素的异或结果。由于它们是不同的数字，必有一位二进制数位异或结果为1。找到这个位置。我们可以将数组元素分开两组。一组是这个位置二进制为1的数字，它们包含成对出现的和一个单独出现的。另一组则是该位为0的数字。由于二进制只有两个情况，所有数字都会分为两类。极端情况是一类只有一个不同的数字，另一类包含所有相同数字和另一个不同数字。再对两类做异或操作，最后的结果就是两个不同的数字。
+
+链接：https://leetcode-cn.com/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-lcof/solution/jian-zhi-offer-56-i-shu-zu-zhong-shu-zi-tykom/
+
+```python
+class Solution(object):
+    def singleNumbers(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: List[int]
+        """
+        x, y, n, m = 0, 0, 0, 1
+        for num in nums:
+            n ^= num
+        while n & m == 0:
+            m <<= 1
+        for num in nums:
+            if num & m:
+                x ^= num
+            else:
+                y ^= num
+        return [x, y]
+执行用时：20 ms, 在所有 Python 提交中击败了98.06%的用户
+内存消耗：13.9 MB, 在所有 Python 提交中击败了59.83%的用户
+通过测试用例：35 / 35
+```
+
+#### [剑指 Offer 56 - II. 数组中数字出现的次数 II](https://leetcode-cn.com/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-ii-lcof/)
+
+暴力哈希表法：
+
+```python
+class Solution(object):
+    def singleNumber(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        dict = {}
+        for num in nums:
+            if num in dict:
+                dict[num] += 1
+            else:
+                dict[num] = 1
+        for key in dict:
+            if dict[key] == 1:
+                return key
+执行用时：28 ms, 在所有 Python 提交中击败了86.62%的用户
+内存消耗：13.9 MB, 在所有 Python 提交中击败了75.35%的用户
+通过测试用例：32 / 32
+```
+
+k神的状态机（位运算）
+
+![Picture1.png](https://pic.leetcode-cn.com/28f2379be5beccb877c8f1586d8673a256594e0fc45422b03773b8d4c8418825-Picture1.png)
+
+![Picture4.png](https://pic.leetcode-cn.com/f75d89219ad93c69757b187c64784b4c7a57dce7911884fe82f14073d654d32f-Picture4.png)
+
+https://leetcode-cn.com/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-ii-lcof/solution/mian-shi-ti-56-ii-shu-zu-zhong-shu-zi-chu-xian-d-4/
+
+```Python
+class Solution(object):
+    def singleNumber(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        one, two = 0, 0
+        for num in nums:
+            one = one ^ num & ~two
+            two = two ^ num & ~one
+        return one
+执行用时：24 ms, 在所有 Python 提交中击败了95.07%的用户
+内存消耗：13.9 MB, 在所有 Python 提交中击败了86.27%的用户
+通过测试用例：32 / 32
+```
+
+#### [剑指 Offer 39. 数组中出现次数超过一半的数字](https://leetcode-cn.com/problems/shu-zu-zhong-chu-xian-ci-shu-chao-guo-yi-ban-de-shu-zi-lcof/)
+
+简单粗暴法：
+
+先排序，由于重复数字数量超过数组长度的一半，则在数组中间的数字必定是该重复数字。
+
+```python
+class Solution(object):
+    def majorityElement(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        nums.sort()
+        m = len(nums) // 2  
+        return nums[m]
+执行用时：28 ms, 在所有 Python 提交中击败了51.36%的用户
+内存消耗：14.2 MB, 在所有 Python 提交中击败了33.85%的用户
+通过测试用例：45 / 45
+```
+
+解题思路：
+本文将 “数组中出现次数超过一半的数字” 简称为 “众数” 。
+需要注意的是，数学中众数的定义为 “数组中出现次数最多的数字” ，与本文定义不同。
+
+本题常见的三种解法：
+
+哈希表统计法： 遍历数组 nums ，用 HashMap 统计各数字的数量，即可找出 众数 。此方法时间和空间复杂度均为 O(N)。
+数组排序法： 将数组 nums 排序，数组中点的元素 一定为众数。
+摩尔投票法： 核心理念为 票数正负抵消 。此方法时间和空间复杂度分别为 O(N) 和 O(1)，为本题的最佳解法。
+摩尔投票法：
+设输入数组 nums 的众数为 x ，数组长度为 n 。
+
+推论一： 若记 众数 的票数为 +1，非众数 的票数为 -1 ，则一定有所有数字的 票数和 > 0 。
+
+推论二： 若数组的前 a 个数字的 票数和 = 0，则 数组剩余 (n-a)个数字的 票数和一定仍 >0 ，即后 (n-a)个数字的 众数仍为 x 。
+
+![Picture1.png](https://pic.leetcode-cn.com/1603612327-bOQxzq-Picture1.png)
+
+根据以上推论，记数组首个元素为 $n_1$ ，众数为 x ，遍历并统计票数。当发生 票数和 = 0时，剩余数组的众数一定不变 ，这是由于：
+
+当  $n_1$  = x ： 抵消的所有数字中，有一半是众数 x 。
+当  $n_1$ !=x ： 抵消的所有数字中，众数 x 的数量最少为 0 个，最多为一半。
+利用此特性，每轮假设发生 票数和 = 0都可以 缩小剩余数组区间 。当遍历完成时，最后一轮假设的数字即为众数。
+
+算法流程:
+
+1. 初始化： 票数统计 votes = 0 ， 众数 x；
+2. 循环： 遍历数组 nums 中的每个数字 num ；
+   * 当 票数 votes 等于 0 ，则假设当前数字 num 是众数；
+   * 当 num = x 时，票数 votes 自增 1 ；当 num != x 时，票数 votes 自减 1 ；
+3. 返回值： 返回 x 即可；
+
+作者：jyd
+链接：https://leetcode-cn.com/problems/shu-zu-zhong-chu-xian-ci-shu-chao-guo-yi-ban-de-shu-zi-lcof/solution/mian-shi-ti-39-shu-zu-zhong-chu-xian-ci-shu-chao-3/
+
+```python
+class Solution(object):
+    def majorityElement(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        votes = 0
+        for num in nums:
+            if votes == 0:
+                x = num
+            if num == x:
+                votes += 1
+            else:
+                votes -= 1
+        return x
+执行用时：24 ms, 在所有 Python 提交中击败了73.15%的用户
+内存消耗：14.1 MB, 在所有 Python 提交中击败了57.78%的用户
+通过测试用例：45 / 45
+```
+
+#### [剑指 Offer 66. 构建乘积数组](https://leetcode-cn.com/problems/gou-jian-cheng-ji-shu-zu-lcof/)
+
+解题思路：
+本题的难点在于 不能使用除法 ，即需要 只用乘法 生成数组 BB 。根据题目对 B[i]B[i] 的定义，可列表格，如下图所示。
+
+根据表格的主对角线（全为 11 ），可将表格分为 上三角 和 下三角 两部分。分别迭代计算下三角和上三角两部分的乘积，即可 不使用除法 就获得结果。
+
+![img](https://pic.leetcode-cn.com/1624619180-vpyyqh-Picture1.png)
+
+作者：jyd
+链接：https://leetcode-cn.com/problems/gou-jian-cheng-ji-shu-zu-lcof/solution/mian-shi-ti-66-gou-jian-cheng-ji-shu-zu-biao-ge-fe/
+
+```python 
+class Solution(object):
+    def constructArr(self, a):
+        """
+        :type a: List[int]
+        :rtype: List[int]
+        """
+        b, tmp = [1] * len(a), 1
+        for i in range(1, len(a)):
+            b[i] = b[i-1] * a[i-1]
+        for i in range(len(a)-2, -1, -1):
+            tmp *= a[i+1]
+            b[i] *= tmp
+        return b
+执行用时：48 ms, 在所有 Python 提交中击败了74.58%的用户
+内存消耗：27 MB, 在所有 Python 提交中击败了65.25%的用户
+通过测试用例：44 / 44
+```
+
