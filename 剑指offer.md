@@ -3860,3 +3860,137 @@ class Solution(object):
 通过测试用例：44 / 44
 ```
 
+#### [剑指 Offer 14- I. 剪绳子](https://leetcode-cn.com/problems/jian-sheng-zi-lcof/)
+
+根据数学推导可以得出当均分时可以取得最大值，均分的长度最好是3。详细查看K神的题解：https://leetcode-cn.com/problems/jian-sheng-zi-lcof/solution/mian-shi-ti-14-i-jian-sheng-zi-tan-xin-si-xiang-by/
+
+```python
+class Solution(object):
+    def cuttingRope(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        if n <= 3:
+            return n-1
+        a, b= n // 3, n % 3
+        if b == 0:
+            return int(math.pow(3, a))
+        if b == 1:
+            return int(math.pow(3, a-1) * 4)
+        return int(math.pow(3, a) * 2)
+执行用时：8 ms, 在所有 Python 提交中击败了99.62%的用户
+内存消耗：12.8 MB, 在所有 Python 提交中击败了97.15%的用户
+通过测试用例：50 / 50
+```
+
+动态规划：
+
+这题用动态规划是比较好理解的
+
+1. 我们想要求长度为n的绳子剪掉后的最大乘积，可以从前面比n小的绳子转移而来
+2. 用一个dp数组记录从0到n长度的绳子剪掉后的最大乘积，也就是dp[i]表示长度为i的绳子剪成m段后的最大乘积，初始化dp[2] = 1
+3. 我们先把绳子剪掉第一段（长度为j），如果只剪掉长度为1，对最后的乘积无任何增益，所以从长度为2开始剪
+4. 剪了第一段后，剩下(i - j)长度可以剪也可以不剪。如果不剪的话长度乘积即为j * (i - j)；如果剪的话长度乘积即为j * dp[i - j]。取两者最大值max(j * (i - j), j * dp[i - j])
+5. 第一段长度j可以取的区间为[2,i)，对所有j不同的情况取最大值，因此最终dp[i]的转移方程为
+   dp[i] = max(dp[i], max(j * (i - j), j * dp[i - j]))
+6. 最后返回dp[n]即可
+
+**复杂度分析**
+
+- 时间复杂度：O*(*$n^2$)
+- 空间复杂度：O(n)
+
+作者：edelweisskoko
+链接：https://leetcode-cn.com/problems/jian-sheng-zi-lcof/solution/jian-zhi-offer-14-i-jian-sheng-zi-huan-s-xopj/
+
+```python
+class Solution(object):
+    def cuttingRope(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        dp = [0] * (n+1)
+        dp[2] = 1
+        for i in range(3, n+1):
+            for j in range(2, i):
+                dp[i] = max(dp[i], max(j * (i-j), j * dp[i-j]))
+        return dp[n]
+执行用时：20 ms, 在所有 Python 提交中击败了46.68%的用户
+内存消耗：13 MB, 在所有 Python 提交中击败了59.77%的用户
+通过测试用例：50 / 50
+```
+
+#### [剑指 Offer 57 - II. 和为s的连续正数序列](https://leetcode-cn.com/problems/he-wei-sde-lian-xu-zheng-shu-xu-lie-lcof/)
+
+滑动窗口
+
+大神解答链接：https://leetcode-cn.com/problems/he-wei-sde-lian-xu-zheng-shu-xu-lie-lcof/solution/shi-yao-shi-hua-dong-chuang-kou-yi-ji-ru-he-yong-h/
+
+```python
+class Solution(object):
+    def findContinuousSequence(self, target):
+        """
+        :type target: int
+        :rtype: List[List[int]]
+        """
+        i, j = 1, 1
+        list_sum = 0
+        res = []
+        while i <= target // 2:
+            if list_sum < target:
+                list_sum += j
+                j += 1
+            elif list_sum > target:
+                list_sum -= i
+                i += 1
+            else:
+                arr = list(range(i, j))
+                res.append(arr)
+                list_sum -= i
+                i += 1
+        return res
+执行用时：52 ms, 在所有 Python 提交中击败了77.70%的用户
+内存消耗：13.3 MB, 在所有 Python 提交中击败了34.56%的用户
+通过测试用例：32 / 32
+```
+
+#### [剑指 Offer 62. 圆圈中最后剩下的数字](https://leetcode-cn.com/problems/yuan-quan-zhong-zui-hou-sheng-xia-de-shu-zi-lcof/)
+
+动态规划
+
+模拟整个删除过程最直观，即构建一个长度为 n 的链表，各节点值为对应的顺序索引；每轮删除第 m 个节点，直至链表长度为 1 时结束，返回最后剩余节点的值即可。
+
+模拟法需要循环删除 n - 1轮，每轮在链表中寻找删除节点需要 mm 次访问操作（链表线性遍历），因此总体时间复杂度为 O(nm) 。题目给定的 m, n 取值范围如下所示，观察可知此时间复杂度是不可接受的。
+
+$1≤n≤10^5 \\ 1≤m≤10^6$
+
+实际上，本题是著名的 “约瑟夫环” 问题，可使用 动态规划 解决。
+
+输入 n, m，记此约瑟夫环问题为 「n, m问题」 ，设解（即最后留下的数字）为 f(n)，则有：
+
+「n, m 问题」：数字环为 0, 1, 2, ..., n - 1，解为 f(n) ；
+「n-1, m问题」：数字环为 0, 1, 2, ..., n - 2 ，解为 f(n-1) ；
+以此类推……
+
+作者：jyd
+链接：https://leetcode-cn.com/problems/yuan-quan-zhong-zui-hou-sheng-xia-de-shu-zi-lcof/solution/jian-zhi-offer-62-yuan-quan-zhong-zui-ho-dcow/
+
+```python
+class Solution(object):
+    def lastRemaining(self, n, m):
+        """
+        :type n: int
+        :type m: int
+        :rtype: int
+        """
+        x = 0
+        for i in range(2, n+1):
+            x = (x + m) % i
+        return x
+执行用时：40 ms, 在所有 Python 提交中击败了90.78%的用户
+内存消耗：15.9 MB, 在所有 Python 提交中击败了75.53%的用户
+通过测试用例：36 / 36
+```
+
