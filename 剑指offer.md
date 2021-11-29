@@ -3994,3 +3994,438 @@ class Solution(object):
 通过测试用例：36 / 36
 ```
 
+#### [剑指 Offer 29. 顺时针打印矩阵](https://leetcode-cn.com/problems/shun-shi-zhen-da-yin-ju-zhen-lcof/)
+
+解题思路：
+根据题目示例 matrix = [[1,2,3],[4,5,6],[7,8,9]] 的对应输出 [1,2,3,6,9,8,7,4,5] 可以发现，顺时针打印矩阵的顺序是 “从左向右、从上向下、从右向左、从下向上” 循环。
+
+因此，考虑设定矩阵的“左、上、右、下”四个边界，模拟以上矩阵遍历顺序。
+
+![Picture1.png](https://pic.leetcode-cn.com/c6de3a1bc0f38820941dbcff0e17a49204eba91b967d4ccc0d5485e68a4fcc95-Picture1.png)
+
+算法流程：
+
+1. 空值处理： 当 matrix 为空时，直接返回空列表 [] 即可。
+2. 初始化： 矩阵 左、右、上、下 四个边界 l , r , t , b ，用于打印的结果列表 res 。
+3. 循环打印： “从左向右、从上向下、从右向左、从下向上” 四个方向循环，每个方向打印中做以下三件事 （各方向的具体信息见下表） ；
+   * 根据边界打印，即将元素按顺序添加至列表 res 尾部；
+   * 边界向内收缩 11 （代表已被打印）；
+   * 判断是否打印完毕（边界是否相遇），若打印完毕则跳出。
+4. 返回值： 返回 res 即可。
+
+作者：jyd
+链接：https://leetcode-cn.com/problems/shun-shi-zhen-da-yin-ju-zhen-lcof/solution/mian-shi-ti-29-shun-shi-zhen-da-yin-ju-zhen-she-di/
+
+```python
+class Solution(object):
+    def spiralOrder(self, matrix):
+        """
+        :type matrix: List[List[int]]
+        :rtype: List[int]
+        """
+        if not matrix:
+            return []
+        l, r, t, b, res = 0, len(matrix[0])-1, 0, len(matrix)-1, []
+        while True:
+            for i in range(l, r + 1):
+                res.append(matrix[t][i])
+            t += 1
+            if t > b:
+                break
+            for i in range(t, b + 1):
+                res.append(matrix[i][r])
+            r -= 1
+            if l > r:
+                break
+            for i in range(r, l-1, -1):
+                res.append(matrix[b][i])
+            b -= 1
+            if t > b:
+                break
+            for i in range(b, t-1, -1):
+                res.append(matrix[i][l])
+            l += 1
+            if l > r:
+                break
+        return res
+执行用时：24 ms, 在所有 Python 提交中击败了75.00%的用户
+内存消耗：13.8 MB, 在所有 Python 提交中击败了54.61%的用户
+通过测试用例：27 / 27
+```
+
+解题思路：
+将矩阵第一行的元素添加到 res 列表里，删除第一行（也就是 matrix 中的第一个列表），然后逆时针旋转（这里通过转置+倒序实现），新的 matrix 的第一行即为接下来要打印的元素。
+
+作者：xiao-ma-nong-25
+链接：https://leetcode-cn.com/problems/shun-shi-zhen-da-yin-ju-zhen-lcof/solution/shan-chu-di-yi-xing-ni-shi-zhen-xuan-zhuan-python5/
+
+```python
+class Solution:
+    def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
+        res = []
+        while matrix:
+            res += matrix.pop(0)
+            matrix = list(zip(*matrix))[::-1]
+        return res
+执行用时：36 ms, 在所有 Python 提交中击败了19.90%的用户
+内存消耗：13.9 MB, 在所有 Python 提交中击败了47.09%的用户
+通过测试用例：27 / 27
+```
+
+#### [剑指 Offer 31. 栈的压入、弹出序列](https://leetcode-cn.com/problems/zhan-de-ya-ru-dan-chu-xu-lie-lcof/)
+
+考虑借用一个辅助栈 stack ，模拟 压入 / 弹出操作的排列。根据是否模拟成功，即可得到结果。
+
+入栈操作： 按照压栈序列的顺序执行。
+出栈操作： 每次入栈后，循环判断 “栈顶元素 == 弹出序列的当前元素” 是否成立，将符合弹出序列顺序的栈顶元素全部弹出。
+由于题目规定 栈的所有数字均不相等 ，因此在循环入栈中，每个元素出栈的位置的可能性是唯一的（若有重复数字，则具有多个可出栈的位置）。因而，在遇到 “栈顶元素 == 弹出序列的当前元素” 就应立即执行出栈。
+
+算法流程：
+
+1. 初始化： 辅助栈 stack ，弹出序列的索引 i ；
+2. 遍历压栈序列： 各元素记为 num；
+   * 元素 num 入栈；
+   * 循环出栈：若 stack 的栈顶元素 == 弹出序列元素 popped[i]，则执行出栈与 i++ ；
+3. 返回值： 若 stack为空，则此弹出序列合法。
+   复杂度分析：
+   * 时间复杂度 O(N) ： 其中 N 为列表 pushed的长度；每个元素最多入栈与出栈一次，即最多共 2N 次出入栈操作。
+   * 空间复杂度 O(N) ： 辅助栈 stack 最多同时存储 N 个元素。
+
+作者：jyd
+链接：https://leetcode-cn.com/problems/zhan-de-ya-ru-dan-chu-xu-lie-lcof/solution/mian-shi-ti-31-zhan-de-ya-ru-dan-chu-xu-lie-mo-n-2/
+
+```python
+class Solution(object):
+    def validateStackSequences(self, pushed, popped):
+        """
+        :type pushed: List[int]
+        :type popped: List[int]
+        :rtype: bool
+        """
+        stack, i = [], 0
+        for num in pushed:
+            stack.append(num)
+            while stack and stack[-1] == popped[i]:
+                stack.pop()
+                i += 1
+        return not stack
+执行用时：16 ms, 在所有 Python 提交中击败了95.70%的用户
+内存消耗：13.4 MB, 在所有 Python 提交中击败了10.13%的用户
+通过测试用例：151 / 151
+```
+
+#### [剑指 Offer 20. 表示数值的字符串](https://leetcode-cn.com/problems/biao-shi-shu-zhi-de-zi-fu-chuan-lcof/)
+
+解题思路：
+本题使用有限状态自动机。根据字符类型和合法数值的特点，先定义状态，再画出状态转移图，最后编写代码即可。
+
+字符类型：
+
+空格 「 」、数字「 0—90—9 」 、正负号 「 +-+− 」 、小数点 「 .. 」 、幂符号 「 eEeE 」 。
+
+状态定义：
+
+按照字符串从左到右的顺序，定义以下 9 种状态。
+
+1. 开始的空格
+2. 幂符号前的正负号
+3. 小数点前的数字
+4. 小数点、小数点后的数字
+5. 当小数点前为空格时，小数点、小数点后的数字
+6. 幂符号
+7. 幂符号后的正负号
+8. 幂符号后的数字
+9. 结尾的空格
+
+结束状态：
+
+合法的结束状态有 2, 3, 7, 8 。
+
+![Picture1.png](https://pic.leetcode-cn.com/6f41d7e46fd0344c013980e3f46429dd7a7311bb4292783a482466a90f15747b-Picture1.png)
+
+作者：jyd
+链接：https://leetcode-cn.com/problems/biao-shi-shu-zhi-de-zi-fu-chuan-lcof/solution/mian-shi-ti-20-biao-shi-shu-zhi-de-zi-fu-chuan-y-2/
+
+```python
+class Solution(object):
+    def isNumber(self, s):
+        """
+        :type s: str
+        :rtype: bool
+        """
+        states = [
+            {' ': 0, 's': 1, 'd': 2, '.': 4}, # 0. start with 'blank'开头空格 还是指向states[0]，上一位是 开头空格，下一位可以是 空格、符号、数字、前面没有数的小数点
+            {'d': 2, '.': 4},                 # 1. 'sign' before 'e'上一位是符号，符号位后面可以是 数字、前面没有数的小数点
+            {'d': 2, '.': 3, 'e': 5, ' ': 8}, # 2. 'digit' before 'dot'：上一位是数字，数字的下一位可以是 数字、前面有数的小数点、e、结尾空格
+            {'d': 3, 'e': 5, ' ': 8},         # 3. 'digit' after 'dot'上一位是前面有数的小数点，下一位可以是 数字、e（8.e2 = 8e2，和2的情况一样）、结尾空格
+            {'d': 3},                         # 4. 'digit' after 'dot' (‘blank’ before 'dot')上一位是前面没有数的小数点，下一位只能是 数字（符号肯定不行，e得前面有数才行）  
+            {'s': 6, 'd': 7},                 # 5. 'e' 上一位是e，下一位可以是 符号、数字
+            {'d': 7},                         # 6. 'sign' after 'e' 上一位是e后面的符号，下一位只能是 数字
+            {'d': 7, ' ': 8},                 # 7. 'digit' after 'e' 上一位是e后面的数字，下一位可以是 数字、结尾空格
+            {' ': 8}                          # 8. end with 'blank' 上一位是结尾空格，下一位只能是 结尾空格
+        ]
+        p = 0
+        for c in s:
+            if '0' <= c <= '9':
+                t = 'd'
+            elif c in "+-":
+                t = 's'
+            elif c in "Ee":
+                t = 'e'
+            elif c in ". ":
+                t = c
+            else:
+                t = '?'
+            if t not in states[p]:
+                return False
+            p = states[p][t]
+        return p in (2, 3, 7, 8)
+执行用时：32 ms, 在所有 Python 提交中击败了45.88%的用户
+内存消耗：13 MB, 在所有 Python 提交中击败了82.74%的用户
+通过测试用例：1480 / 1480
+```
+
+#### [剑指 Offer 67. 把字符串转换成整数](https://leetcode-cn.com/problems/ba-zi-fu-chuan-zhuan-huan-cheng-zheng-shu-lcof/)
+
+暴力解题法
+
+本题目涉及的变化不多，尝试暴力解题，列举所有可能的状态。考虑到题目有正负的要求，设立一个符号位s记录符号。
+
+1. 在遇到第一个非空格符号前，我们设立一个l记录遍历到的字符位置，设立res记录遍历到的数字。开始遍历字符串，每移动一次l+1，根据l判断是否遍历完字符串，是直接返回0。直到遇到第一个非空字符
+   * 它是+-之一，将其赋值给s，l+1，根据l判断是否遍历完字符串，是直接返回0（只有一个符号位在字符串内）；
+   * 它是数字，将其添加到res中，l+1，根据l判断是否遍历完字符串，是直接返回该位数字（只有一个数字在字符串内），否跳出循环，进入下一个阶段；
+   * 它不是以上两者，即第一个非空字符既不是+-也不是数字，直接返回0。
+2. 若第一步没有返回，则证明遇到的第一个非空字符是数字或者+-，接下来就继续判断后面的字符是否是数字，是就添加到res，不是就结束遍历。
+3. 此时res里面有两种情况
+   * 第一个非空字符是+-，后面接着的字符不是数字，此时res为空，返回0
+   * 第一个是数字，后面不论是什么res非空（在步骤1加入了第一个数字）
+4. 若res非空，先判断符号位s是否是-，是则再判断大小是否超出范围，再将输出取负；否的话直接判断是否超出范围。
+
+```Python
+class Solution(object):
+    def strToInt(self, str):
+        """
+        :type str: str
+        :rtype: int
+        """
+        if len(str) == 0:
+            return 0
+        s = ''
+        l = 0
+        res = []
+        for c in str:
+            if c == ' ':
+                l += 1
+                if l >= len(str):
+                    return 0
+                continue
+            elif c in "+-":
+                s = c
+                l += 1
+                if l >= len(str):
+                    return 0
+                break
+            elif '0' <= c <= '9':
+                l += 1
+                if l >= len(str):
+                    return int(c)
+                else:
+                    res.append(c)
+                    break
+            else:
+                return 0
+        for i in range(l, len(str)):
+            if '0' <= str[i] <= '9':
+                res.append(str[i])
+            else:
+                break
+        if len(res) == 0:
+            return 0
+        out = int(''.join(res))
+        if s == '-':
+            if out <= 2 ** 31:
+                return -out
+            else:
+                return - 2 ** 31
+        if out > 2 ** 31 -1:
+            return 2 ** 31 -1
+        return out
+执行用时：28 ms, 在所有 Python 提交中击败了53.93%的用户
+内存消耗：13.1 MB, 在所有 Python 提交中击败了67.01%的用户
+通过测试用例：1079 / 1079
+```
+
+解题思路：
+根据题意，有以下四种字符需要考虑：
+
+首部空格： 删除之即可；
+符号位： 三种情况，即 ''+'' , ''-'' , ''无符号" ；新建一个变量保存符号位，返回前判断正负即可。
+非数字字符： 遇到首个非数字的字符时，应立即返回。
+数字字符：
+字符转数字： “此数字的 ASCII 码” 与 “ 0 的 ASCII 码” 相减即可；
+数字拼接： 若从左向右遍历数字，设当前位字符为 c ，当前位数字为 x ，数字结果为 res ，则数字拼接公式为：
+
+![image-20211129170002444](E:\MyGit\LeetCode\剑指offer.assets\image-20211129170002444.png)
+
+![Picture1.png](https://pic.leetcode-cn.com/0be9098b13047fe3e07f3c4e51c612244ace01a023ed010bce43940408334f2a-Picture1.png)
+
+数字越界处理：
+
+题目要求返回的数值范围应在 \[$-2^{31}, 2^{31} - 1$\]，因此需要考虑数字越界问题。而由于题目指出 环境只能存储 32 位大小的有符号整数 ，因此判断数字越界时，要始终保持 res 在 int 类型的取值范围内。
+
+在每轮数字拼接前，判断 res在此轮拼接后是否超过 2147483647 ，若超过则加上符号位直接返回。
+设数字拼接边界 bndry = 2147483647 // 10 = 214748364 ，则以下两种情况越界：
+
+![image-20211129170056471](E:\MyGit\LeetCode\剑指offer.assets\image-20211129170056471.png)
+
+![Picture2.png](https://pic.leetcode-cn.com/d1b06a91801868af63f6e309da31bcfa01c7b6c385529fb974389a61e454cd12-Picture2.png)
+
+作者：jyd
+链接：https://leetcode-cn.com/problems/ba-zi-fu-chuan-zhuan-huan-cheng-zheng-shu-lcof/solution/mian-shi-ti-67-ba-zi-fu-chuan-zhuan-huan-cheng-z-4/
+
+```python
+class Solution(object):
+    def strToInt(self, str):
+        """
+        :type str: str
+        :rtype: int
+        """
+        str = str.strip()
+        if not str:
+            return 0
+        res, i, sign = 0, 1, 1
+        int_max, int_min, bndry = 2 ** 31 - 1, -2 **31, 2 ** 31 // 10
+        if str[0] == '-':
+            sign = -1
+        elif str[0] != '+':
+            i = 0
+        for c in str[i:]:
+            if not '0' <= c <= '9':
+                break
+            if res > bndry or res == bndry and c > '7':
+                return int_max if sign == 1 else int_min
+            res = 10 * res + ord(c) - ord('0')
+        return sign * res
+执行用时：20 ms, 在所有 Python 提交中击败了92.15%的用户
+内存消耗：13 MB, 在所有 Python 提交中击败了87.96%的用户
+通过测试用例：1079 / 1079
+```
+
+#### [剑指 Offer 59 - I. 滑动窗口的最大值](https://leetcode-cn.com/problems/hua-dong-chuang-kou-de-zui-da-zhi-lcof/)
+
+暴力解题法：
+
+直接按照顺序遍历，每次都取子数组里面的最大值。
+
+```python
+class Solution(object):
+    def maxSlidingWindow(self, nums, k):
+        """
+        :type nums: List[int]
+        :type k: int
+        :rtype: List[int]
+        """
+        if not nums or k == 1:
+            return nums
+        out = []
+        for i in range(len(nums) - k + 1):
+            tmp = nums[i: i+k]
+            out.append(max(tmp))
+        return out
+执行用时：308 ms, 在所有 Python 提交中击败了27.93%的用户
+内存消耗：20 MB, 在所有 Python 提交中击败了71.07%的用户
+通过测试用例：18 / 18
+```
+
+K神解题法：https://leetcode-cn.com/problems/hua-dong-chuang-kou-de-zui-da-zhi-lcof/solution/mian-shi-ti-59-i-hua-dong-chuang-kou-de-zui-da-1-6/
+
+```Python
+class Solution(object):
+    def maxSlidingWindow(self, nums, k):
+        """
+        :type nums: List[int]
+        :type k: int
+        :rtype: List[int]
+        """
+        if not nums or k == 0: return []
+        deque = collections.deque()
+        # 未形成窗口
+        for i in range(k):
+            while deque and deque[-1] < nums[i]:
+                deque.pop()
+            deque.append(nums[i])
+        res = [deque[0]]
+        # 形成窗口后
+        for i in range(k, len(nums)):
+            if deque[0] == nums[i - k]:
+                deque.popleft()
+            while deque and deque[-1] < nums[i]:
+                deque.pop()
+            deque.append(nums[i])
+            res.append(deque[0])
+        return res
+执行用时：36 ms, 在所有 Python 提交中击败了90.77%的用户
+内存消耗：20.3 MB, 在所有 Python 提交中击败了34.41%的用户
+通过测试用例：18 / 18
+```
+
+#### [剑指 Offer 59 - II. 队列的最大值](https://leetcode-cn.com/problems/dui-lie-de-zui-da-zhi-lcof/)
+
+思路
+
+本算法基于问题的一个重要性质：当一个元素进入队列的时候，它前面所有比它小的元素就不会再对答案产生影响。
+
+举个例子，如果我们向队列中插入数字序列 1 1 1 1 2，那么在第一个数字 2 被插入后，数字 2 前面的所有数字 1 将不会对结果产生影响。因为按照队列的取出顺序，数字 2 只能在所有的数字 1 被取出之后才能被取出，因此如果数字 1 如果在队列中，那么数字 2 必然也在队列中，使得数字 1 对结果没有影响。
+
+按照上面的思路，我们可以设计这样的方法：从队列尾部插入元素时，我们可以提前取出队列中所有比这个元素小的元素，使得队列中只保留对结果有影响的数字。这样的方法等价于要求维持队列单调递减，即要保证每个元素的前面都没有比它小的元素。
+
+那么如何高效实现一个始终递减的队列呢？我们只需要在插入每一个元素 value 时，从队列尾部依次取出比当前元素 value 小的元素，直到遇到一个比当前元素大的元素 value' 即可。
+
+上面的过程保证了只要在元素 value 被插入之前队列递减，那么在 value 被插入之后队列依然递减。
+而队列的初始状态（空队列）符合单调递减的定义。
+由数学归纳法可知队列将会始终保持单调递减。
+上面的过程需要从队列尾部取出元素，因此需要使用双端队列来实现。另外我们也需要一个辅助队列来记录所有被插入的值，以确定 pop_front 函数的返回值。
+
+保证了队列单调递减后，求最大值时只需要直接取双端队列中的第一项即可。
+
+作者：LeetCode-Solution
+链接：https://leetcode-cn.com/problems/dui-lie-de-zui-da-zhi-lcof/solution/mian-shi-ti-59-ii-dui-lie-de-zui-da-zhi-by-leetcod/
+
+```python
+class MaxQueue(object):
+
+    def __init__(self):
+        self.queue = collections.deque()
+        self.deque = collections.deque()
+
+
+    def max_value(self):
+        """
+        :rtype: int
+        """
+        return self.deque[0] if self.deque else -1
+
+
+    def push_back(self, value):
+        """
+        :type value: int
+        :rtype: None
+        """
+        self.queue.append(value)
+        while self.deque and self.deque[-1] < value:
+            del self.deque[-1]
+        self.deque.append(value)
+
+
+    def pop_front(self):
+        """
+        :rtype: int
+        """
+        if not self.queue: return -1
+        self.queue[0] == self.deque[0] and self.deque.popleft()
+        return self.queue.popleft()
+执行用时：540 ms, 在所有 Python 提交中击败了93.29%的用户
+内存消耗：17.5 MB, 在所有 Python 提交中击败了56.71%的用户
+通过测试用例：34 / 34
+```
+
