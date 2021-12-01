@@ -79,7 +79,7 @@ class CQueue(object):
             self.stack2.append(self.stack1.pop())
         return self.stack2.pop()
 
-         
+
 
 
 # Your CQueue object will be instantiated and called as such:
@@ -168,7 +168,7 @@ class Solution(object):
                 hash_map.add(num)
             else:
                 return num
-                
+
 执行用时：24 ms, 在所有 Python 提交中击败了87.44%的用户
 内存消耗：21.4 MB, 在所有 Python 提交中击败了18.47%的用户
 通过测试用例：25 / 25
@@ -223,7 +223,7 @@ class Solution(object):
             head = head.next
         out = out[::-1]
         return out
-   
+
 执行用时：24 ms, 在所有 Python 提交中击败了67.23%的用户
 内存消耗：16.4 MB, 在所有 Python 提交中击败了71.31%的用户
 通过测试用例：24 / 24
@@ -516,7 +516,7 @@ class Solution(object):
             cur_new_list = cur_new_list.next
         return new_head
 
-    
+
 执行用时：32 ms, 在所有 Python 提交中击败了94.76%的用户
 内存消耗：13.8 MB, 在所有 Python 提交中击败了42.68%的用户
 通过测试用例：18 / 18
@@ -779,8 +779,6 @@ class Solution(object):
 - 时间复杂度：O(lgk),k=max(n,m)
 - 空间复杂度：O(1)。
 
-
-
 递归
 
 在 mid列寻找满足条件 matrix\[row - 1][mid]<target<matrix\[row][mid]的点，比如当 row=3,mid=2时（黄色区域），9<target<14，这时我们可以判断出来 target一定在左下或者右上区域：
@@ -934,7 +932,7 @@ class Solution(object):
 
 哈希表：遍历字符串，建立字符和字符出现位置键值对的哈希表。当出现重复字符时，将键值改为-1。遍历哈希表键值，找出不为-1的最小值。
 
-```python 
+```python
 class Solution(object):
     def firstUniqChar(self, s):
         """
@@ -1633,7 +1631,7 @@ class Solution(object):
 
 类似上题，优化速度。
 
-```python 
+```python
 class Solution(object):
     def numWays(self, n):
         """
@@ -2250,7 +2248,7 @@ class Solution(object):
 空间复杂度 O(N)： 新建的 list(Python) 或 StringBuilder(Java) 中的字符串总长度 ≤N ，占用 O(N)大小的额外空间。
 链接：https://leetcode-cn.com/problems/fan-zhuan-dan-ci-shun-xu-lcof/solution/mian-shi-ti-58-i-fan-zhuan-dan-ci-shun-xu-shuang-z/
 
-```python 
+```python
 class Solution(object):
     def reverseWords(self, s):
         """
@@ -2303,8 +2301,7 @@ M, N分别为矩阵行列大小， K为字符串 word 长度。
 
 链接：https://leetcode-cn.com/problems/ju-zhen-zhong-de-lu-jing-lcof/solution/mian-shi-ti-12-ju-zhen-zhong-de-lu-jing-shen-du-yo/
 
-
-```python 
+```python
 class Solution(object):
     def exist(self, board, word):
         """
@@ -2341,7 +2338,6 @@ class Solution(object):
 3. 查找当前字符的周围字符，如果周围字符没有被访问过且与字符串的下一个字符相等，再次进入递归
 4. 当索引index已经等于字符串长度时，说明已经找到了一条路径，返回True
 5. 只要找到一条路径就返回true：if dfs返回True： 返回True
-
 
 链接：https://leetcode-cn.com/problems/ju-zhen-zhong-de-lu-jing-lcof/solution/jian-zhi-offer-12-ju-zhen-zhong-de-lu-ji-u3mw/
 
@@ -2445,6 +2441,7 @@ class Solution(object):
 $$
 \textit{vis}[i][j]=\textit{vis}[i-1][j]\ \textrm{or}\ \textit{vis}[i][j-1]
 $$
+
 即只要有一个格子可达，那么 (i, j) 这个格子就是可达的，因此我们只要遍历所有格子，递推计算出它们是否可达然后用变量 ans 记录可达的格子数量即可。
 
 初始条件 vis\[i]\[j] = 1 ，递推计算的过程中注意边界的处理。
@@ -2557,16 +2554,16 @@ class Solution(object):
                 temp.append(node.val)
                 node = parents[node]
             res.append(temp[::-1])
-        
+
         if not root:
             return res
-        
+
         que_node = collections.deque([root])
         que_total = collections.deque([0])
         while que_node:
             node = que_node.popleft()
             total = que_total.popleft() + node.val
-            
+
             if not node.left and not node.right and total == target:
                 getpath(node)
             else:
@@ -2616,7 +2613,6 @@ treeToDoublyList(root)：
 4. 构建循环链表： 中序遍历完成后，head 指向头节点， pre 指向尾节点，因此修改 head 和 pre 的双向节点引用即可；
 5. 返回值： 返回链表的头节点 head 即可；
 
-
 链接：https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/solution/mian-shi-ti-36-er-cha-sou-suo-shu-yu-shuang-xian-5/
 
 ```python
@@ -2647,7 +2643,7 @@ class Solution(object):
 
         if not root:
             return
-        
+
         self.pre = None
         dfs(root)
         self.head.left, self.pre.right = self.pre, self.head
@@ -2747,7 +2743,7 @@ class Solution(object):
                 cur = cur.right
         if not root:
             return root
-        
+
         gen = generator(root)
         head = next(gen)
         cur = head
@@ -3528,7 +3524,7 @@ class Solution(object):
 
 对于n，通过每次右移一位并判断它和1“与”的结果，将$x^n$分解为$x, x^2, x^4, ...$某些组合连乘的结果。举个例子，对于n=10，它的二进制是1010，可以将$x^{10}$表示为$x^2 * x^8$，即$x^{2^3} * x^{2^1}$
 
-```python 
+```python
 class Solution(object):
     def myPow(self, x, n):
         """
@@ -3841,7 +3837,7 @@ class Solution(object):
 作者：jyd
 链接：https://leetcode-cn.com/problems/gou-jian-cheng-ji-shu-zu-lcof/solution/mian-shi-ti-66-gou-jian-cheng-ji-shu-zu-biao-ge-fe/
 
-```python 
+```python
 class Solution(object):
     def constructArr(self, a):
         """
@@ -4429,3 +4425,249 @@ class MaxQueue(object):
 通过测试用例：34 / 34
 ```
 
+#### [剑指 Offer 37. 序列化二叉树](https://leetcode-cn.com/problems/xu-lie-hua-er-cha-shu-lcof/)
+
+前序中序后序遍历的结果不能唯一确定一棵树的结构，即不能反向还原序列至树结构。所以本题使用层序遍历。
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Codec:
+
+    def serialize(self, root):
+        """Encodes a tree to a single string.
+
+        :type root: TreeNode
+        :rtype: str
+        """
+        if not root:
+            return "[]"
+        queue = collections.deque()
+        queue.append(root)
+        res= []
+        while queue:
+            node = queue.popleft()
+            if node:
+                res.append(str(node.val))
+                queue.append(node.left)
+                queue.append(node.right)
+            else:
+                res.append("null")
+        return '[' + ','.join(res) + ']'
+
+
+    def deserialize(self, data):
+        """Decodes your encoded data to tree.
+
+        :type data: str
+        :rtype: TreeNode
+        """
+        if data == "[]":
+            return None
+        val, i = data[1:-1].split(','), 1
+        root = TreeNode(int(val[0]))
+        queue = collections.deque()
+        queue.append(root)
+        while queue:
+            node = queue.popleft()
+            if val[i] != "null":
+                node.left = TreeNode(int(val[i]))
+                queue.append(node.left)
+            i += 1
+            if val[i] != "null":
+                node.right = TreeNode(int(val[i]))
+                queue.append(node.right)
+            i += 1
+        return root
+
+
+
+# Your Codec object will be instantiated and called as such:
+# codec = Codec()
+# codec.deserialize(codec.serialize(root))
+执行用时：80 ms, 在所有 Python 提交中击败了83.52%的用户
+内存消耗：22.8 MB, 在所有 Python 提交中击败了60.44%的用户
+通过测试用例：48 / 48
+```
+
+排列方案的生成：
+
+根据字符串排列的特点，考虑深度优先搜索所有排列方案。即通过字符交换，先固定第 1 位字符（ n 种情况）、再固定第 2 位字符（ n−1 种情况）、... 、最后固定第 n 位字符（ 1 种情况）。
+
+重复排列方案与剪枝：
+
+当字符串存在重复字符时，排列方案中也存在重复的排列方案。为排除重复方案，需在固定某位字符时，保证 “每种字符只在此位固定一次” ，即遇到重复字符时不交换，直接跳过。从 DFS 角度看，此操作称为 “剪枝” 。
+
+递归解析：
+
+1. 终止条件： 当 x = len(c) - 1 时，代表所有位已固定（最后一位只有 1 种情况），则将当前组合 c 转化为字符串并加入 res ，并返回；
+2. 递推参数： 当前固定位 x ；
+3. 递推工作： 初始化一个 Set ，用于排除重复的字符；将第 x 位字符与$ i \in [x, len(c)]$ 字符分别交换，并进入下层递归；
+   1. 剪枝： 若 c[i] 在 Set 中，代表其是重复字符，因此 “剪枝” ；
+   2. 将 c[i] 加入 Set ，以便之后遇到重复字符时剪枝；
+   3. 固定字符： 将字符 c[i] 和 c[x] 交换，即固定 c[i] 为当前位字符；
+   4. 开启下层递归： 调用 dfs(x + 1) ，即开始固定第 x + 1 个字符；
+   5. 还原交换： 将字符 c[i] 和 c[x] 交换（还原之前的交换）；
+
+作者：jyd
+链接：https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/solution/mian-shi-ti-38-zi-fu-chuan-de-pai-lie-hui-su-fa-by/
+
+```python
+class Solution(object):
+    def permutation(self, s):
+        """
+        :type s: str
+        :rtype: List[str]
+        """
+        c, res = list(s), []
+        def dfs(x):
+            if x == len(c) - 1:
+                res.append(''.join(c))
+                return
+            dic = set()
+            for i in range(x, len(c)):
+                if c[i] in dic:
+                    continue
+                dic.add(c[i])
+                c[i], c[x] = c[x], c[i]
+                dfs(x + 1)
+                c[i], c[x] = c[x], c[i]
+        dfs(0)
+        return res
+执行用时：72 ms, 在所有 Python 提交中击败了97.86%的用户
+内存消耗：20 MB, 在所有 Python 提交中击败了31.41%的用户
+通过测试用例：52 / 52
+```
+
+#### [剑指 Offer 19. 正则表达式匹配](https://leetcode-cn.com/problems/zheng-ze-biao-da-shi-pi-pei-lcof/)
+
+解题思路：
+设 s 的长度为 n ， p 的长度为 m ；将 s 的第 i 个字符记为 $s_i$ ，p 的第 j 个字符记为 $p_j$，将 s 的前 i 个字符组成的子字符串记为 s[:i] , 同理将 p 的前 j 个字符组成的子字符串记为p[:j]。
+
+因此，本题可转化为求 s[:n] 是否能和 p[:m] 匹配。
+
+总体思路是从 s[:1]和 p[:1]是否能匹配开始判断，每轮添加一个字符并判断是否能匹配，直至添加完整个字符串 s 和 p 。展开来看，假设 s[:i] 与 p[:j] 可以匹配，那么下一状态有两种：
+
+添加一个字符 $s_{i+1}$后是否能匹配？
+添加字符 $p_{j+1}$ 后是否能匹配？
+
+![Picture1.png](https://pic.leetcode-cn.com/1614516402-HyzAil-Picture1.png)
+
+因此，本题的状态共有 m×n 种，应定义状态矩阵 dp ，dp[i][j] 代表 s[:i]与 p[:j]是否可以匹配。
+
+做好状态定义，接下来就是根据 「普通字符」 , 「.」 , 「*」三种字符的功能定义，分析出动态规划的转移方程。
+
+动态规划解析：
+
+* *状态定义： 设动态规划矩阵 dp ， dp[i][j] 代表字符串 s 的前 i 个字符和 p 的前 j 个字符能否匹配。
+
+* 转移方程： 需要注意，由于 dp[0][0] 代表的是空字符的状态， 因此 dp[i][j] 对应的添加字符是 s[i - 1] 和 p[j - 1] 。
+  
+  * 当 p[j - 1] = '*' 时， dp[i][j] 在当以下任一情况为 true时等于 true ：
+    
+    1. dp[i][j - 2]： 即将字符组合 p[j - 2] * 看作出现 0 次时，能否匹配；
+    
+    2. dp[i - 1][j] 且 s[i - 1] = p[j - 2]: 即让字符 p[j - 2] 多出现 1 次时，能否匹配；
+    
+    3. dp[i - 1][j] 且 p[j - 2] = '.' :  即让字符 '.' 多出现 1 次时，能否匹配；
+  
+  * 当 p[j - 1] != '*' 时， dp[i][j] 在当以下任一情况为 true时等于 true ：
+    
+    1. dp[i - 1][j - 1] 且 s[i - 1] = p[j - 1]： 即让字符 p[j - 1] 多出现一次时，能否匹配；
+    
+    2. dp[i - 1][j - 1] 且 p[j - 1] = '.'： 即将字符 . 看作字符 s[i - 1] 时，能否匹配；
+
+* 初始化： 需要先初始化 dp 矩阵首行，以避免状态转移时索引越界。
+  
+  * dp[0][0] = true： 代表两个空字符串能够匹配。
+  
+  * dp[0][j] = dp[0][j - 2] 且 p[j - 1] = '*'： 首行 s 为空字符串，因此当 p 的偶数位为 * 时才能够匹配（即让 p 的奇数位出现 0 次，保持 p 是空字符串）。因此，循环遍历字符串 p ，步长为 2（即只看偶数位）。
+
+* 返回值： dp 矩阵右下角字符，代表字符串 s 和 p 能否匹配。
+
+复杂度分析
+时间复杂度 O(MN) ： 其中 M, N分别为 s 和 p 的长度，状态转移需遍历整个 dp 矩阵。
+空间复杂度 O(MN) ： 状态矩阵 dp 使用 O(MN)的额外空间。
+
+作者：jyd
+链接：https://leetcode-cn.com/problems/zheng-ze-biao-da-shi-pi-pei-lcof/solution/jian-zhi-offer-19-zheng-ze-biao-da-shi-pi-pei-dong/
+
+```python
+class Solution(object):
+    def isMatch(self, s, p):
+        """
+        :type s: str
+        :type p: str
+        :rtype: bool
+        """
+        m, n = len(s) + 1, len(p) + 1
+        dp = [[False] * n for _ in range(m)]
+        dp[0][0] = True
+        for j in range(2, n, 2):
+             dp[0][j] = dp[0][j-2] and p[j-1] == '*'
+        for i in range(1, m):
+            for j in range(1, n):
+                if p[j - 1] == '*':
+                    if dp[i][j - 2]: dp[i][j] = True                              # 1.
+                    elif dp[i - 1][j] and s[i - 1] == p[j - 2]: dp[i][j] = True   # 2.
+                    elif dp[i - 1][j] and p[j - 2] == '.': dp[i][j] = True        # 3.
+                else:
+                    if dp[i - 1][j - 1] and s[i - 1] == p[j - 1]: dp[i][j] = True # 1.
+                    elif dp[i - 1][j - 1] and p[j - 1] == '.': dp[i][j] = True    # 2.
+        return dp[-1][-1]
+执行用时：28 ms, 在所有 Python 提交中击败了91.50%的用户
+内存消耗：13.1 MB, 在所有 Python 提交中击败了56.21%的用户
+通过测试用例：447 / 447
+```
+
+#### [剑指 Offer 49. 丑数](https://leetcode-cn.com/problems/chou-shu-lcof/)
+
+由于抽丑数只能是2、3和5的数个相乘结果，即丑数=某较小丑数x某因子（2、3和5）。1除外。
+
+在已有的丑数序列上每一个数都必须乘2， 乘3， 乘5， 这样才不会漏掉某些丑数。假设已有的丑数序列为[1, 2, 3, ..., n1, n2], 如果单纯的让每个丑数乘2， 乘3， 乘5顺序排列的话肯定会有问题，
+
+比如如果按照这样的顺序排列下去肯定有问题[1\*2, 1\*3, 1\*5, 2\*2, 2\*3, 2\*5, 3\*2, 3\*3, 3\*5, ... , n1\*2, n1 \* 3, n1 \* 5, n2 \* 2, n2 \* 3, n2 \* 5]，因为后面乘2的数据可能会比前面乘3乘5的数据要小，那这个乘2的数应该排在他们的前面， 后面乘3的数据也可能比前面乘5的数据要小，那这个乘3的数应该排在他们的前面。
+
+那怎么办呢，每个数都必须乘2， 乘3， 乘5这样才能保证求出所有的丑数，而且还要保证丑数的顺序，这个改如何同时实现呢？
+
+通过观察网上的各个题解，终于找到了办法，那就是记录每个丑数是否已经被乘2， 乘3， 乘5了， 具体的做法是
+
+设置3个索引a, b, c，分别记录前几个数已经被乘2， 乘3， 乘5了，比如a表示前(a-1)个数都已经乘过一次2了，下次应该乘2的是第a个数；b表示前(b-1)个数都已经乘过一次3了，下次应该乘3的是第b个数；c表示前(c-1)个数都已经乘过一次5了，下次应该乘5的是第c个数；
+
+对于某个状态下的丑数序列，我们知道此时第a个数还没有乘2(有没有乘3或者乘5不知道）， 第b个数还没有乘3(有没有乘2或者乘5不知道），第c个数还没有乘5(有没有乘2或者乘3不知道), 下一个丑数一定是从第a丑数乘2， 第b个数乘3， 第c个数乘5中获得，他们三者最小的那个就是下个丑数。
+
+求得下个丑数后就得判断这个丑数是谁，是某个数通过乘2得到的，还是某个数乘3得到的，又或是说某个数通过乘5得到的。我们可以比较一下这个新的丑数等于究竟是等于第a个丑数乘2, 还是第b个数乘3， 还是第c个数乘5， 通过比较我们肯定可以知道这个新的丑数到底是哪个数通过乘哪个数得到的。假设这个新的丑数是通过第a个数乘2得到的，说明此时第a个数已经通过乘2得到了一个新的丑数，那下个通过乘2得到一个新的丑数的数应该是第(a+1)个数，此时我们可以说前 a 个数都已经乘过一次2了，下次应该乘2的是第 （a+1） 个数, 所以a++；如果新的丑数是通过第b个数乘3得到的, 说明此时第 b个数已经通过乘3得到了一个新的丑数，那下个需要通过乘3得到一个新的丑数的数应该是第(b+1)个数，此时我们可以说前 b 个数都已经乘过一次3了，下次应该乘3的是第 （b+1） 个数, 所以 b++；同理，如果这个这个新的丑数是通过第c个数乘5得到的, 那么c++;
+
+但是注意，如果第a个数乘2后等于第b个数乘3，或者等于第c个数乘5， 说明这个新的丑数是有两种或者三种方式可以得到，这时应该给得到这个新丑数的组合对应的索引都加一，比如新丑数是第a个数乘2后和第b个数乘3得到的，那么 a 和 b都应该加一， 因为此时第a个数已经通过乘2得到了一个新的丑数，第b个数已经通过乘3得到了一个新的丑数, 只不过这两个数相等而已。所以我们给计数器加一的时候不能使用 if else else if， 而应该使用if, if, if, 这样才不会把应该加一的计数器漏掉
+
+经过n次循环，就能得到第n 个丑数了。
+
+题解来自@不是秒针
+
+```python
+class Solution(object):
+    def nthUglyNumber(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        dp, a, b, c = [1] * n, 0, 0, 0
+        for i in range(1, n):
+            n2, n3, n5 = dp[a] * 2, dp[b] * 3, dp[c] * 5
+            dp[i] = min(n2, n3, n5)
+            if dp[i] == n2:
+                a += 1
+            if dp[i] == n3:
+                b += 1
+            if dp[i] == n5:
+                c += 1
+        return dp[-1]
+执行用时：72 ms, 在所有 Python 提交中击败了90.85%的用户
+内存消耗：13.1 MB, 在所有 Python 提交中击败了57.40%的用户
+通过测试用例：596 / 596
+```

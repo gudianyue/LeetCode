@@ -724,7 +724,7 @@ class Solution(object):
                 intersection.append(nums1[index1])
                 index1 += 1
                 index2 += 1
-        
+
         return intersection
 执行用时：16 ms, 在所有 Python 提交中击败了94.97%的用户
 内存消耗：12.9 MB, 在所有 Python 提交中击败了95.37%的用户
@@ -1119,7 +1119,7 @@ class Solution(object):
         for st in strs:
             key = "".join(sorted(st))
             mp[key].append(st)
-        
+
         return list(mp.values())
 执行用时：48 ms, 在所有 Python 提交中击败了78.74%的用户
 内存消耗：17 MB, 在所有 Python 提交中击败了57.95%的用户
@@ -1366,8 +1366,6 @@ def InsertSort(numbers:List[int]):
 
 ![图解算法---希尔排序](https://imgconvert.csdnimg.cn/aHR0cDovL3AxLnBzdGF0cC5jb20vbGFyZ2UvcGdjLWltYWdlLzE1MjM3NjMzOTA2MzI4OWM0ZjI4N2Ez?x-oss-process=image/format,png)
 
-
-
 ![图解算法---希尔排序](https://imgconvert.csdnimg.cn/aHR0cDovL3AzLnBzdGF0cC5jb20vbGFyZ2UvcGdjLWltYWdlLzE1MjM3NjMzOTA2ODc2ZDFkYjk0Y2Y5?x-oss-process=image/format,png)
 
 ![图解算法---希尔排序](https://imgconvert.csdnimg.cn/aHR0cDovL3A5LnBzdGF0cC5jb20vbGFyZ2UvcGdjLWltYWdlLzE1MjM3NjMzOTA3NjFmN2YzMmRmNTI4?x-oss-process=image/format,png)
@@ -1378,14 +1376,14 @@ def InsertSort(numbers:List[int]):
 
 ```python
 def ShellSort(arr:List[int]): 
-  
+
     n = len(arr)
     gap = int(n/2) ## 取整
-  
+
     while gap > 0: 
-  
+
         for i in range(gap,n): 
-  
+
             temp = arr[i] 
             j = i 
             while  j >= gap and arr[j-gap] >temp: 
@@ -1408,7 +1406,7 @@ def SelectSort(numbers:List[int]):
         for j in range(i+1, len(numbers)):
             if numbers[min_idx] > numbers[j]:
                 min_idx = j
-                
+
         numbers[i], numbers[min_idx] = numbers[min_idx], numbers[i]
 ```
 
@@ -1450,6 +1448,7 @@ def BubbleSort(numbers):
 **堆排序**是一种原地、时间复杂度O(nlogn)的排序算法，它借助了一种数据结构-堆(heap)。
 
 #### 什么是堆？
+
 首先堆是一种树，一种满足以下特质的树结构：
 
 堆是一个完全二叉树
@@ -1513,25 +1512,25 @@ def heapify(arr, n, i):
     largest = i  
     l = 2 * i + 1     # left = 2*i + 1 
     r = 2 * i + 2     # right = 2*i + 2 
-  
+
     if l < n and arr[i] < arr[l]: 
         largest = l 
-  
+
     if r < n and arr[largest] < arr[r]: 
         largest = r 
-  
+
     if largest != i: 
         arr[i],arr[largest] = arr[largest],arr[i]  # 交换
-  
+
         heapify(arr, n, largest) 
-  
+
 def heapSort(arr): 
     n = len(arr) 
-  
+
     # Build a maxheap. 
     for i in range(n//2-1, -1, -1): # 一个节点的左右子节点的下标分别为2i+1和2i+2，因此只需要考虑前一半元素即可
         heapify(arr, n, i) 
-  
+
     # 一个个交换元素
     for i in range(n-1, 0, -1): 
         arr[i], arr[0] = arr[0], arr[i]   # 交换
@@ -1618,29 +1617,29 @@ def MergeSort(numbers):
 def partition(arr,low,high): 
     i = low-1         # 最小元素索引
     pivot = arr[high]     
-  
+
     for j in range(low, high): 
-  
+
         # 当前元素小于或等于 pivot 
         if arr[j] <= pivot: 
-          
+
             i = i+1 
             arr[i],arr[j] = arr[j],arr[i] 
-  
+
     arr[i+1],arr[high] = arr[high],arr[i+1] 
     return i+1
-  
- 
+
+
 # arr[] --> 排序数组
 # low  --> 起始索引
 # high  --> 结束索引
-  
+
 # 快速排序函数
 def quickSort(arr,low,high): 
     if low < high: 
-  
+
         pi = partition(arr,low,high) 
-  
+
         quickSort(arr, low, pi-1) 
         quickSort(arr, pi+1, high) 
 ```
@@ -1764,35 +1763,35 @@ def RadixSort(numbers):
 ```python
 # 返回 x 在 arr 中的索引，如果不存在返回 -1
 def binarySearch (arr, l, r, x): 
-  
+
     # 基本判断
     if r >= l: 
-  
+
         mid = int(l + (r - l)/2)
-  
+
         # 元素整好的中间位置
         if arr[mid] == x: 
             return mid 
-          
+
         # 元素小于中间位置的元素，只需要再比较左边的元素
         elif arr[mid] > x: 
             return binarySearch(arr, l, mid-1, x) 
-  
+
         # 元素大于中间位置的元素，只需要再比较右边的元素
         else: 
             return binarySearch(arr, mid+1, r, x) 
-  
+
     else: 
         # 不存在
         return -1
-  
+
 # 测试数组
 arr = [ 2, 3, 4, 10, 40 ] 
 x = 10
-  
+
 # 函数调用
 result = binarySearch(arr, 0, len(arr)-1, x) 
-  
+
 if result != -1: 
     print ("元素在数组中的索引为 %d" % result )
 else: 
@@ -1886,7 +1885,7 @@ class Solution:
             m = l + (r - l) // 2
             ## 右边子序列为偶数
             halves_are_even = (r - m) % 2 == 0
-            
+
             if nums[m + 1] == nums[m]:
             # 如果中间的元素与右边元素相等，且右边为偶数，那么去除一个之后，右边序列变为奇数，待查找的元素在右侧子列
                 if halves_are_even:
@@ -2144,7 +2143,7 @@ class Solution(object):
                 nums[i], nums[0] = nums[0], nums[i]
                 self.heap_size -= 1
                 KeepHeap(nums, 0)
-        
+
         def BuildMaxHeap(nums):
             self.heap_size = len(nums)
             for i in range(len(nums)//2-1, -1, -1):
@@ -2157,7 +2156,7 @@ class Solution(object):
             if i != largest:
                 nums[i], nums[largest] = nums[largest], nums[i]
                 KeepHeap(nums, largest)
-        
+
         HeapSort(nums)
         return nums[k-1]
 执行用时：636 ms, 在所有 Python 提交中击败了8.54%的用户
@@ -2180,7 +2179,7 @@ class Solution:
             num, x, y = heapq.heappop(pq) #弹出候选人里最小一个
             if y != n - 1: #如果这一行还没被弹完
                 heapq.heappush(pq, (matrix[x][y + 1], x, y + 1)) #加入这一行的下一个候选人
-        
+
         return heapq.heappop(pq)[0]
 执行用时：76 ms, 在所有 Python 提交中击败了46.23%的用户
 内存消耗：16.8 MB, 在所有 Python 提交中击败了62.31%的用户
@@ -2307,4 +2306,3 @@ class Solution(object):
 执行用时：72 ms, 在所有 Python 提交中击败了85.66%的用户
 内存消耗：21 MB, 在所有 Python 提交中击败了78.49%的用户
 ```
-
